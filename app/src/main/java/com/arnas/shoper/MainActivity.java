@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        LinearLayout ll = new LinearLayout(this);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
 
@@ -45,19 +45,25 @@ public class MainActivity extends AppCompatActivity {
 
                 Button addCheckBox = (Button)findViewById(R.id.addCheckBox);
 
-              //  LinearLayout ll = new LinearLayout(this);
+                final LinearLayout linear=(LinearLayout)findViewById(R.id.singleitem);
 
+                final LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
                 addCheckBox.setOnClickListener(new View.OnClickListener() {
+
                     @Override
                     public void onClick(View v) {
-                        for(int i = 0; i < 20; i++) {
-                            CheckBox cb = new CheckBox(getApplicationContext());
-                            cb.setText("I'm dynamic!");
-                            ll.addView(cb);
+                    for(int i=0;i<1;i++) {
 
-                        }
+                        CheckBox checkBox = new CheckBox(getApplicationContext());
+                        checkBox.setText("I'm dynamic!");
+                        checkBox.setLayoutParams(lparams);
+
+                        linear.addView(checkBox);
                     }
+                    }
+
                 });
 
 
