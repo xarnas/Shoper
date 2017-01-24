@@ -21,7 +21,32 @@ public class MainActivity extends AppCompatActivity {
     ListView listView ;
     String[] values= new String[1];
 
+protected void checkBoxList(){
+    setContentView(R.layout.singleitem);
+    final LinearLayout linear=(LinearLayout)findViewById(R.id.singleitem);
+    Button addCheckBox = (Button)findViewById(R.id.addCheckBox);
 
+    final LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+    addCheckBox.setOnClickListener(new View.OnClickListener() {
+        int z =1;
+        @Override
+        public void onClick(View v) {
+
+            for(int i=0;i<1;i++) {
+
+                CheckBox checkBox = new CheckBox(getApplicationContext());
+                checkBox.setText("I'm dynamic! "+z);
+                checkBox.setLayoutParams(lparams);
+
+                linear.addView(checkBox);
+                z++;
+            }
+        }
+
+    });
+}
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,33 +65,7 @@ public class MainActivity extends AppCompatActivity {
                // values[0]="Ramune";
                 // listView.invalidateViews();
 
-
-                setContentView(R.layout.singleitem);
-
-                Button addCheckBox = (Button)findViewById(R.id.addCheckBox);
-
-                final LinearLayout linear=(LinearLayout)findViewById(R.id.singleitem);
-
-                final LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-                addCheckBox.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                    for(int i=0;i<1;i++) {
-
-                        CheckBox checkBox = new CheckBox(getApplicationContext());
-                        checkBox.setText("I'm dynamic!");
-                        checkBox.setLayoutParams(lparams);
-
-                        linear.addView(checkBox);
-                    }
-                    }
-
-                });
-
-
+                checkBoxList();
             }
         });
 
@@ -89,6 +88,9 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),
                             "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
                             .show();
+
+
+                    checkBoxList();
 
                 }
 
