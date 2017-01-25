@@ -15,17 +15,25 @@
     <TextView
         android:text="TextView"
         android:layout_width="match_parent"
-        android:layout_height="72dp"
+        android:layout_height="40dp"
         android:id="@+id/itemName"
         android:gravity="center"
         android:layout_gravity="top" />
-
+    <EditText
+        android:text=""
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:id="@+id/itemName2"
+        android:background="@android:color/transparent"
+        android:inputType="textNoSuggestions"
+        android:layout_gravity="bottom" />
     <Button
         android:text="add Check box"
-        android:layout_width="136dp"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
         android:id="@+id/addCheckBox"
         android:layout_gravity="bottom" />
+
 
 
 </LinearLayout>

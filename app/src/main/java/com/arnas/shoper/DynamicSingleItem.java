@@ -40,11 +40,14 @@ private void CreateCheckBoxList(){
 
             for(int i=0;i<1;i++) {
 
-                CheckBox checkBox = new CheckBox(getApplicationContext());
+                /*CheckBox checkBox = new CheckBox(getApplicationContext());
                 checkBox.setText("I'm dynamic! "+z);
-                checkBox.setLayoutParams(lparams);
-
-                linear.addView(checkBox);
+                checkBox.setLayoutParams(lparams);*/
+                Button btn = new Button(getApplicationContext());
+                btn.setText("Button" +z);
+                btn.setLayoutParams(lparams);
+               // linear.addView(checkBox);
+                linear.addView(btn);
                 z++;
             }
         }

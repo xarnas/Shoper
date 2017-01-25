@@ -12,9 +12,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,7 +29,8 @@ protected void checkBoxList(){
     setContentView(R.layout.singleitem);
     final LinearLayout linear=(LinearLayout)findViewById(R.id.singleitem);
     Button addCheckBox = (Button)findViewById(R.id.addCheckBox);
-
+    final EditText singleItem= (EditText) findViewById(R.id.itemName2);
+    final TextView headItem= (TextView) findViewById(R.id.itemName);
     final LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
@@ -36,11 +41,25 @@ protected void checkBoxList(){
 
             for(int i=0;i<1;i++) {
 
-                CheckBox checkBox = new CheckBox(getApplicationContext());
-                checkBox.setText("I'm dynamic! "+z);
-                checkBox.setLayoutParams(lparams);
+                final CheckBox checkBox = new CheckBox(getApplicationContext());
+                if (singleItem.getText().toString().isEmpty()){
+                    break;
+                }else {
+                    checkBox.setText(singleItem.getText());
+                    headItem.setText("New checkbox inserted");
+                    checkBox.setLayoutParams(lparams);
+                    checkBox.setId(z);
+                    checkBox.setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View v) {
+                            Toast.makeText(getApplicationContext(),
+                                    "Position :" + checkBox.getId() + "  ListItem : " + checkBox.getText(), Toast.LENGTH_LONG)
+                                    .show();
 
-                linear.addView(checkBox);
+                        }
+                    });
+                    linear.addView(checkBox);
+                }
                 z++;
             }
         }
