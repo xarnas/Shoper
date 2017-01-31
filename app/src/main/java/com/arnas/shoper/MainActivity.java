@@ -5,6 +5,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -48,15 +49,54 @@ protected void checkBoxList(){
                     checkBox.setText(singleItem.getText());
                     headItem.setText("New checkbox inserted");
                     checkBox.setLayoutParams(lparams);
-                    checkBox.setId(z);
-                    checkBox.setOnClickListener(new View.OnClickListener(){
+                    checkBox.setId(10+z);
+
+
+
+                  checkBox.setOnClickListener(new View.OnClickListener(){
                         @Override
                         public void onClick(View v) {
-                            Toast.makeText(getApplicationContext(),
+                           /* Toast.makeText(getApplicationContext(),
                                     "Position :" + checkBox.getId() + "  ListItem : " + checkBox.getText(), Toast.LENGTH_LONG)
-                                    .show();
+                                    .show();*/
+                              int moveckbox = checkBox.getId()+1;
 
-                        }
+
+                           if (checkBox.isChecked()){
+                               CheckBox cbx = (CheckBox) findViewById(moveckbox);
+                               cbx.setX(cbx.getX()+100);
+                               cbx.setY(cbx.getY()+100);
+                            //Button btn = new Button(getApplicationContext());
+
+                               for (int i = 1; i < 4; i++) {
+                                   linear.removeView(findViewById(100+i));
+                                   Button btnTag = new Button(getApplicationContext());
+                                   btnTag.setLayoutParams(lparams);
+
+                                   switch (i) {
+                                       case 1:
+                                           btnTag.setText("Edit"+i);
+                                           break;
+                                       case 2:
+                                           btnTag.setText("Delete"+i);
+                                           break;
+                                       case 3:
+                                           btnTag.setText("Cancel"+i);
+                                           break;
+                                   }
+
+                                   btnTag.setId(100+i);
+                                   linear.addView(btnTag);
+                                   ((Button) findViewById(100+i)).setOnClickListener(this);
+                               }
+
+
+                               }if (!checkBox.isChecked()){
+                                for (int i = 1; i < 4; i++) {
+                                   linear.removeView(findViewById(100+i));
+                                }}
+                           }
+
                     });
                     linear.addView(checkBox);
                 }
