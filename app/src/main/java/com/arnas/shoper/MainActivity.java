@@ -1,10 +1,13 @@
 
 package com.arnas.shoper;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ScrollingTabContainerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
@@ -16,6 +19,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,12 +33,13 @@ public class MainActivity extends AppCompatActivity {
 
 protected void checkBoxList(){
     setContentView(R.layout.singleitem);
-    final LinearLayout linear=(LinearLayout)findViewById(R.id.singleitem);
+    /*final LinearLayout linear=(LinearLayout)findViewById(R.id.singleitem);*/
+    final TableLayout Table = (TableLayout) findViewById(R.id.tablein);
     Button addCheckBox = (Button)findViewById(R.id.addCheckBox);
     final EditText singleItem= (EditText) findViewById(R.id.itemName2);
     final TextView headItem= (TextView) findViewById(R.id.itemName);
-    final LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+   /* final LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);*/
 
     addCheckBox.setOnClickListener(new View.OnClickListener() {
         int z =1;
@@ -48,7 +54,7 @@ protected void checkBoxList(){
                 }else {
                     checkBox.setText(singleItem.getText());
                     headItem.setText("New checkbox inserted");
-                    checkBox.setLayoutParams(lparams);
+                   /* checkBox.setLayoutParams(lparams);*/
                     checkBox.setId(10+z);
 
 
@@ -56,24 +62,91 @@ protected void checkBoxList(){
                   checkBox.setOnClickListener(new View.OnClickListener(){
                         @Override
                         public void onClick(View v) {
+
+                            if (!checkBox.isChecked()){
+                                for (int i = 1; i < 4; i++) {
+                                    Table .removeView(findViewById(100+i));
+                                }
+                            }else {
+
+                                TableRow row = new TableRow(getApplicationContext());
+
+
+                                Table.setGravity(Gravity.CENTER);
+                                //Table.setBackgroundResource(Color.MAGENTA);
+
+                                row = new TableRow(getApplicationContext());
+
+                                TextView text1 = new TextView(getApplicationContext());
+                                TextView text2 = new TextView(getApplicationContext());
+                                TextView text3 = new TextView(getApplicationContext());
+                                row.setId(100 + 1);
+                                text1.setText(" Edit ");
+                                row.addView(text1);
+                                text2.setText("Delete ");
+                                row.addView(text2);
+                                text3.setText("Cancel");
+                                row.addView(text3);
+
+                           /* Button btnTag1 = new Button(getApplicationContext());
+                            btnTag1.setId(101+1);
+                            row.addView(btnTag1);
+                            ((Button) findViewById(101+1)).setOnClickListener(this);
+                            Button btnTag2 = new Button(getApplicationContext());
+                            btnTag2.setId(102);
+                            row.addView(btnTag2);
+                            ((Button) findViewById(102)).setOnClickListener(this);
+                            Button btnTag3 = new Button(getApplicationContext());
+                            btnTag3.setId(103);
+                            row.addView(btnTag3);
+                            ((Button) findViewById(103)).setOnClickListener(this);*/
+
+                                text1.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        checkBox.setText("CHANGED!");
+                                        Toast.makeText(getApplicationContext(),
+                                                "Edit ME!!!", Toast.LENGTH_LONG)
+                                                .show();
+                                    }
+                                });
+                                text2.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Toast.makeText(getApplicationContext(),
+                                                "Delete ME!!!", Toast.LENGTH_LONG)
+                                                .show();
+                                    }
+                                });
+                                text3.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Toast.makeText(getApplicationContext(),
+                                                "Cancel ME!!!", Toast.LENGTH_LONG)
+                                                .show();
+                                    }
+                                });
+
+                                Table.addView(row);
+                            }
                            /* Toast.makeText(getApplicationContext(),
                                     "Position :" + checkBox.getId() + "  ListItem : " + checkBox.getText(), Toast.LENGTH_LONG)
                                     .show();*/
                               int moveckbox = checkBox.getId()+1;
 
 
-                           if (checkBox.isChecked()){
+                       /*    if (checkBox.isChecked()){
                                CheckBox cbx = (CheckBox) findViewById(moveckbox);
-                               cbx.setX(cbx.getX()+100);
                                cbx.setY(cbx.getY()+100);
                             //Button btn = new Button(getApplicationContext());
-
+                                int a=30;
                                for (int i = 1; i < 4; i++) {
-                                   linear.removeView(findViewById(100+i));
-                                   Button btnTag = new Button(getApplicationContext());
-                                   btnTag.setLayoutParams(lparams);
 
-                                   switch (i) {
+                                   /*linear.removeView(findViewById(100+i));*/
+                         /*          Button btnTag = new Button(getApplicationContext());
+                                  /* btnTag.setLayoutParams(lparams);*/
+
+                       /*            switch (i) {
                                        case 1:
                                            btnTag.setText("Edit"+i);
                                            break;
@@ -84,21 +157,20 @@ protected void checkBoxList(){
                                            btnTag.setText("Cancel"+i);
                                            break;
                                    }
-
+                                   btnTag.setX(cbx.getX()+10+a);
+                                   //btnTag.setY(cbx.getY());
                                    btnTag.setId(100+i);
-                                   linear.addView(btnTag);
+                                   Table.addView(btnTag);
                                    ((Button) findViewById(100+i)).setOnClickListener(this);
-                               }
+                                   a=+30;
+                               }*/
 
 
-                               }if (!checkBox.isChecked()){
-                                for (int i = 1; i < 4; i++) {
-                                   linear.removeView(findViewById(100+i));
-                                }}
+
                            }
 
                     });
-                    linear.addView(checkBox);
+                    Table.addView(checkBox);
                 }
                 z++;
             }

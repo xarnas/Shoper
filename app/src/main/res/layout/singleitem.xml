@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -19,6 +16,7 @@
         android:id="@+id/itemName"
         android:gravity="center"
         android:layout_gravity="top" />
+
     <EditText
         android:text=""
         android:layout_width="match_parent"
@@ -27,14 +25,38 @@
         android:background="@android:color/transparent"
         android:inputType="textNoSuggestions"
         android:layout_gravity="bottom" />
+
     <Button
         android:text="add Check box"
         android:layout_width="match_parent"
         android:layout_height="36dp"
         android:id="@+id/addCheckBox"
         android:layout_gravity="bottom" />
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/tablein">
 
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </TableLayout>
+    </ScrollView>
 </LinearLayout>
-</ScrollView>
+
