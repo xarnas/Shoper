@@ -60,27 +60,27 @@ protected void checkBoxList(){
 
 
                   checkBox.setOnClickListener(new View.OnClickListener(){
+
                         @Override
                         public void onClick(View v) {
 
                             if (!checkBox.isChecked()){
-                                for (int i = 1; i < 4; i++) {
-                                    Table .removeView(findViewById(100+i));
-                                }
-                            }else {
+                                    final int nIndex = Table.indexOfChild(checkBox);
+                                    Table.removeView(findViewById(100+nIndex));
 
+                            }else {
+                                final int nIndex = Table.indexOfChild(checkBox);
                                 TableRow row = new TableRow(getApplicationContext());
 
 
                                 Table.setGravity(Gravity.CENTER);
                                 //Table.setBackgroundResource(Color.MAGENTA);
 
-                                row = new TableRow(getApplicationContext());
 
                                 TextView text1 = new TextView(getApplicationContext());
                                 TextView text2 = new TextView(getApplicationContext());
                                 TextView text3 = new TextView(getApplicationContext());
-                                row.setId(100 + 1);
+                                row.setId(100 + nIndex);
                                 text1.setText(" Edit ");
                                 row.addView(text1);
                                 text2.setText("Delete ");
@@ -113,6 +113,8 @@ protected void checkBoxList(){
                                 text2.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
+                                        Table.removeViewAt(nIndex);
+                                        Table.removeView(findViewById(100+nIndex));
                                         Toast.makeText(getApplicationContext(),
                                                 "Delete ME!!!", Toast.LENGTH_LONG)
                                                 .show();
@@ -127,7 +129,7 @@ protected void checkBoxList(){
                                     }
                                 });
 
-                                Table.addView(row);
+                                Table.addView(row,nIndex+1);
                             }
                            /* Toast.makeText(getApplicationContext(),
                                     "Position :" + checkBox.getId() + "  ListItem : " + checkBox.getText(), Toast.LENGTH_LONG)
@@ -170,7 +172,8 @@ protected void checkBoxList(){
                            }
 
                     });
-                    Table.addView(checkBox);
+
+                    Table.addView(checkBox,0);
                 }
                 z++;
             }
