@@ -1,17 +1,22 @@
 
 package com.arnas.shoper;
+import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ScrollingTabContainerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -19,11 +24,15 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -31,13 +40,44 @@ public class MainActivity extends AppCompatActivity {
     ListView listView ;
     String[] values= new String[1];
 
+
+    public void addItemsOnSpinner(final PopupWindow popupView) {
+
+        final Spinner spinner1 = (Spinner) popupView.getContentView().findViewById(R.id.spinner1);
+
+        List<String> list = new ArrayList<String>();
+        list.add("list 1");
+        list.add("list 2");
+        list.add("list 3");
+
+
+
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, list);
+
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+
+        spinner1.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                Toast.makeText(getBaseContext(), spinner1.getContentDescription(), Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+        });
+
+        spinner1.setAdapter(dataAdapter);
+
+    }
+
 protected void checkBoxList(){
     setContentView(R.layout.singleitem);
     /*final LinearLayout linear=(LinearLayout)findViewById(R.id.singleitem);*/
     final TableLayout Table = (TableLayout) findViewById(R.id.tablein);
     Button addCheckBox = (Button)findViewById(R.id.addCheckBox);
     final EditText singleItem= (EditText) findViewById(R.id.itemName2);
-    final TextView headItem= (TextView) findViewById(R.id.itemName);
+    //final TextView headItem= (TextView) findViewById(R.id.itemName);
    /* final LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);*/
 
@@ -53,7 +93,7 @@ protected void checkBoxList(){
                     break;
                 }else {
                     checkBox.setText(singleItem.getText());
-                    headItem.setText("New checkbox inserted");
+                    //headItem.setText("New checkbox inserted");
                    /* checkBox.setLayoutParams(lparams);*/
                     checkBox.setId(10+z);
 
@@ -77,7 +117,7 @@ protected void checkBoxList(){
                                 //Table.setBackgroundResource(Color.MAGENTA);
 
 
-                                TextView text1 = new TextView(getApplicationContext());
+                                final TextView text1 = new TextView(getApplicationContext());
                                 TextView text2 = new TextView(getApplicationContext());
                                 TextView text3 = new TextView(getApplicationContext());
                                 row.setId(100 + nIndex);
@@ -102,14 +142,46 @@ protected void checkBoxList(){
                             ((Button) findViewById(103)).setOnClickListener(this);*/
 
                                 text1.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        checkBox.setText("CHANGED!");
-                                        Toast.makeText(getApplicationContext(),
-                                                "Edit ME!!!", Toast.LENGTH_LONG)
-                                                .show();
-                                    }
-                                });
+                                                             @Override
+                                                             public void onClick(View v) {
+                                                                 checkBox.setText("CHANGED!");
+                                                                 Toast.makeText(getApplicationContext(),
+                                                                         "Edit ME!!!", Toast.LENGTH_LONG)
+                                                                         .show();
+
+
+
+                                                                         LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                                                                         View popupView = layoutInflater.inflate(R.layout.registry, null);
+                                                                         final PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+
+
+                                                                 
+
+                                                                         //setContentView(R.layout.registry);
+                                                                         addItemsOnSpinner(popupWindow);
+
+                                                                         Button btnDismiss = (Button) popupView.findViewById(R.id.dismiss);
+
+
+                                                                         btnDismiss.setOnClickListener(new Button.OnClickListener() {
+
+                                                                             @Override
+                                                                             public void onClick(View v) {
+
+                                                                                 popupWindow.dismiss();
+                                                                             }
+                                                                         });
+
+                                                                         popupWindow.showAsDropDown(text1, 50, -30);
+
+
+
+                                                             }
+                                                         });
+
+
+
                                 text2.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
