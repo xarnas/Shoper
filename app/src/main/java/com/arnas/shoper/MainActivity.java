@@ -4,6 +4,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.LayoutRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -33,6 +35,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.RunnableFuture;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -51,17 +54,14 @@ public class MainActivity extends AppCompatActivity {
         list.add("list 3");
 
 
-
-
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, list);
 
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-
         spinner1.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                Toast.makeText(getBaseContext(), spinner1.getContentDescription(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), "Listiner test "+spinner1.getId(), Toast.LENGTH_SHORT).show();
                 return false;
             }
 
@@ -149,14 +149,12 @@ protected void checkBoxList(){
                                                                          "Edit ME!!!", Toast.LENGTH_LONG)
                                                                          .show();
 
+                                                                 LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                                                                 final View popupView = layoutInflater.inflate(R.layout.registry, null);
+                                                                 final PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
 
 
-                                                                         LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-                                                                         View popupView = layoutInflater.inflate(R.layout.registry, null);
-                                                                         final PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
 
-
-                                                                 
 
                                                                          //setContentView(R.layout.registry);
                                                                          addItemsOnSpinner(popupWindow);
@@ -173,11 +171,12 @@ protected void checkBoxList(){
                                                                              }
                                                                          });
 
-                                                                         popupWindow.showAsDropDown(text1, 50, -30);
-
-
+                                                                         //popupWindow.showAsDropDown(text1, 50, -30);
+                                                                 popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+                                                                 
 
                                                              }
+
                                                          });
 
 
