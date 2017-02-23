@@ -1,26 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="1"
     android:baselineAligned="false"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:id="@+id/singleitem">
 
-    <TextView
-        android:text="TextView"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="72dp"
-        android:id="@+id/itemName"
-        android:gravity="center"
-        android:layout_gravity="top" />
+        android:layout_height="74dp"
+        android:layout_weight="0.82">
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/tablein">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </TableLayout>
+    </ScrollView>
+
+    <EditText
+        android:text=""
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:id="@+id/itemName2"
+        android:background="@android:color/transparent"
+        android:inputType="textNoSuggestions"
+        android:layout_gravity="bottom"
+        android:layout_weight="0.13" />
 
     <Button
         android:text="add Check box"
-        android:layout_width="136dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/addCheckBox"
-        android:layout_gravity="bottom" />
-
+        android:layout_gravity="bottom"
+        tools:gravity="bottom|center_horizontal" />
 
 </LinearLayout>
+

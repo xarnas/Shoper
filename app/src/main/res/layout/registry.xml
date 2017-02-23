@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="246dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="1dp"
+        android:background="@android:color/darker_gray"
+        android:weightSum="1"
+        android:layout_weight="0.78"
+        android:id="@+id/registry">
+        <TextView
+            android:layout_width="92dp"
+            android:layout_height="wrap_content"
+            android:text="Pridėti prekę" />
+       <TextView
+           android:layout_width="203dp"
+           android:layout_height="wrap_content"
+           android:text="Prekės pavadinimas"/>
+        <EditText
+            android:text=""
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/itemName"
+            android:inputType="textNoSuggestions"
+            android:layout_weight="0.13" />
+      <TextView
+          android:layout_width="92dp"
+          android:layout_height="wrap_content"
+          android:text="Vienetai" />
+        <EditText
+            android:text=""
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/itemUnit"
+            android:inputType="textNoSuggestions"
+            android:layout_weight="0.13" />
+        <TextView
+            android:layout_width="92dp"
+            android:layout_height="wrap_content"
+            android:text="Prekės tipas" />
+        <Spinner
+            android:id="@+id/spinner1"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:background="@android:drawable/btn_dropdown"
+            android:spinnerMode="dialog"/>
+        <LinearLayout
+            android:layout_width="214dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_margin="20dp"
+            android:weightSum="1">
+            <Button
+                android:id="@+id/saveitem"
+                android:layout_width="108dp"
+                android:layout_height="wrap_content"
+                android:text="Išsaugoti"
+                android:layout_weight="0.03" />
+            <Button
+                android:id="@+id/dismiss"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Atšaukti"
+                android:layout_weight="0.10" />
+
+        </LinearLayout>
+    </LinearLayout>
+
