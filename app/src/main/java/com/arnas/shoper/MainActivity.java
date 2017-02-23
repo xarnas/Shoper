@@ -2,6 +2,7 @@
 package com.arnas.shoper;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -42,11 +43,23 @@ public class MainActivity extends AppCompatActivity {
 
     ListView listView ;
     String[] values= new String[1];
+    String checkBoxValue;
+
+    public void addItemsOnSpinner(String checkBoxName, final TableLayout Table) {
+
+        if (!checkBoxName.isEmpty()) {
+            checkBoxName="empty";
+        }
+
+        LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        final View popupView = layoutInflater.inflate(R.layout.registry, null);
+        final PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
 
 
-    public void addItemsOnSpinner(final PopupWindow popupView) {
 
-        final Spinner spinner1 = (Spinner) popupView.getContentView().findViewById(R.id.spinner1);
+
+        final Spinner spinner1 = (Spinner) popupWindow.getContentView().findViewById(R.id.spinner1);
 
         List<String> list = new ArrayList<String>();
         list.add("list 1");
@@ -69,64 +82,71 @@ public class MainActivity extends AppCompatActivity {
 
         spinner1.setAdapter(dataAdapter);
 
-    }
+        Button btnAcppect = (Button) popupView.findViewById(R.id.saveitem);
+        Button btnDismiss = (Button) popupView.findViewById(R.id.dismiss);
+        final EditText inputName = (EditText)popupView.findViewById(R.id.itemName);
+        //inputName.setText(checkBoxName);
+        final EditText inputUnit = (EditText)popupView.findViewById(R.id.itemUnit);
+        //inputUnit.setText(checkBoxName);
+        spinner1.setSelection(2);
 
-protected void checkBoxList(){
-    setContentView(R.layout.singleitem);
-    /*final LinearLayout linear=(LinearLayout)findViewById(R.id.singleitem);*/
-    final TableLayout Table = (TableLayout) findViewById(R.id.tablein);
-    Button addCheckBox = (Button)findViewById(R.id.addCheckBox);
-    final EditText singleItem= (EditText) findViewById(R.id.itemName2);
-    //final TextView headItem= (TextView) findViewById(R.id.itemName);
-   /* final LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);*/
 
-    addCheckBox.setOnClickListener(new View.OnClickListener() {
-        int z =1;
-        @Override
-        public void onClick(View v) {
-
-            for(int i=0;i<1;i++) {
-
+        btnAcppect.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                //int z =1;
+                checkBoxValue=inputName.getText().toString()+" "+inputUnit.getText().toString()+" "+spinner1.getSelectedItem().toString();
                 final CheckBox checkBox = new CheckBox(getApplicationContext());
-                if (singleItem.getText().toString().isEmpty()){
-                    break;
-                }else {
-                    checkBox.setText(singleItem.getText());
-                    //headItem.setText("New checkbox inserted");
-                   /* checkBox.setLayoutParams(lparams);*/
-                    checkBox.setId(10+z);
+                checkBox.setText(checkBoxValue);
+               // checkBox.setId(10+z);
+                checcBoxFuncionality(Table,checkBox);
+                popupWindow.dismiss();
+
+            }
+        });
+        btnDismiss.setOnClickListener(new Button.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                popupWindow.dismiss();
+            }
+        });
+
+        //popupWindow.showAsDropDown(text1, 50, -30);
+        popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+    }
+protected  void checcBoxFuncionality(final TableLayout Table,final CheckBox checkBox){
+    int z =1;
+        checkBox.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                for (int i = 0; i < 1; i++) {
+                    if (!checkBox.isChecked()) {
+                        final int nIndex = Table.indexOfChild(checkBox);
+                        Table.removeView(findViewById(100 + nIndex));
+
+                    } else {
+                        final int nIndex = Table.indexOfChild(checkBox);
+                        TableRow row = new TableRow(getApplicationContext());
 
 
-
-                  checkBox.setOnClickListener(new View.OnClickListener(){
-
-                        @Override
-                        public void onClick(View v) {
-
-                            if (!checkBox.isChecked()){
-                                    final int nIndex = Table.indexOfChild(checkBox);
-                                    Table.removeView(findViewById(100+nIndex));
-
-                            }else {
-                                final int nIndex = Table.indexOfChild(checkBox);
-                                TableRow row = new TableRow(getApplicationContext());
+                        Table.setGravity(Gravity.CENTER);
+                        //Table.setBackgroundResource(Color.MAGENTA);
 
 
-                                Table.setGravity(Gravity.CENTER);
-                                //Table.setBackgroundResource(Color.MAGENTA);
-
-
-                                final TextView text1 = new TextView(getApplicationContext());
-                                TextView text2 = new TextView(getApplicationContext());
-                                TextView text3 = new TextView(getApplicationContext());
-                                row.setId(100 + nIndex);
-                                text1.setText(" Edit ");
-                                row.addView(text1);
-                                text2.setText("Delete ");
-                                row.addView(text2);
-                                text3.setText("Cancel");
-                                row.addView(text3);
+                        final TextView text1 = new TextView(getApplicationContext());
+                        TextView text2 = new TextView(getApplicationContext());
+                        TextView text3 = new TextView(getApplicationContext());
+                        row.setId(100 + nIndex);
+                        text1.setText(" Edit ");
+                        row.addView(text1);
+                        text2.setText("Delete ");
+                        row.addView(text2);
+                        text3.setText("Cancel");
+                        row.addView(text3);
 
                            /* Button btnTag1 = new Button(getApplicationContext());
                             btnTag1.setId(101+1);
@@ -141,113 +161,73 @@ protected void checkBoxList(){
                             row.addView(btnTag3);
                             ((Button) findViewById(103)).setOnClickListener(this);*/
 
-                                text1.setOnClickListener(new View.OnClickListener() {
-                                                             @Override
-                                                             public void onClick(View v) {
-                                                                 checkBox.setText("CHANGED!");
-                                                                 Toast.makeText(getApplicationContext(),
-                                                                         "Edit ME!!!", Toast.LENGTH_LONG)
-                                                                         .show();
+                        text1.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
 
-                                                                 LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-                                                                 final View popupView = layoutInflater.inflate(R.layout.registry, null);
-                                                                 final PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+                                addItemsOnSpinner(checkBox.getText().toString(),Table);
 
 
-
-
-                                                                         //setContentView(R.layout.registry);
-                                                                         addItemsOnSpinner(popupWindow);
-
-                                                                         Button btnDismiss = (Button) popupView.findViewById(R.id.dismiss);
-
-
-                                                                         btnDismiss.setOnClickListener(new Button.OnClickListener() {
-
-                                                                             @Override
-                                                                             public void onClick(View v) {
-
-                                                                                 popupWindow.dismiss();
-                                                                             }
-                                                                         });
-
-                                                                         //popupWindow.showAsDropDown(text1, 50, -30);
-                                                                 popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
-                                                                 
-
-                                                             }
-
-                                                         });
-
-
-
-                                text2.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        Table.removeViewAt(nIndex);
-                                        Table.removeView(findViewById(100+nIndex));
-                                        Toast.makeText(getApplicationContext(),
-                                                "Delete ME!!!", Toast.LENGTH_LONG)
-                                                .show();
-                                    }
-                                });
-                                text3.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        Toast.makeText(getApplicationContext(),
-                                                "Cancel ME!!!", Toast.LENGTH_LONG)
-                                                .show();
-                                    }
-                                });
-
-                                Table.addView(row,nIndex+1);
                             }
+
+                        });
+
+
+                        text2.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Toast.makeText(getApplicationContext(),
+                                        "Ištrinta prekė "+ checkBox.getText().toString(), Toast.LENGTH_LONG)
+                                        .show();
+                                Table.removeViewAt(nIndex);
+                                Table.removeView(findViewById(100 + nIndex));
+                            }
+                        });
+                        text3.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                           /*     Toast.makeText(getApplicationContext(),
+                                        "Cancel ME!!!", Toast.LENGTH_LONG)
+                                        .show();*/
+                                final int nIndex = Table.indexOfChild(checkBox);
+                                Table.removeView(findViewById(100 + nIndex));
+                            }
+                        });
+
+                        Table.addView(row, nIndex + 1);
+                    }
                            /* Toast.makeText(getApplicationContext(),
                                     "Position :" + checkBox.getId() + "  ListItem : " + checkBox.getText(), Toast.LENGTH_LONG)
                                     .show();*/
-                              int moveckbox = checkBox.getId()+1;
+
+                    int moveckbox = checkBox.getId() + 1;
 
 
-                       /*    if (checkBox.isChecked()){
-                               CheckBox cbx = (CheckBox) findViewById(moveckbox);
-                               cbx.setY(cbx.getY()+100);
-                            //Button btn = new Button(getApplicationContext());
-                                int a=30;
-                               for (int i = 1; i < 4; i++) {
-
-                                   /*linear.removeView(findViewById(100+i));*/
-                         /*          Button btnTag = new Button(getApplicationContext());
-                                  /* btnTag.setLayoutParams(lparams);*/
-
-                       /*            switch (i) {
-                                       case 1:
-                                           btnTag.setText("Edit"+i);
-                                           break;
-                                       case 2:
-                                           btnTag.setText("Delete"+i);
-                                           break;
-                                       case 3:
-                                           btnTag.setText("Cancel"+i);
-                                           break;
-                                   }
-                                   btnTag.setX(cbx.getX()+10+a);
-                                   //btnTag.setY(cbx.getY());
-                                   btnTag.setId(100+i);
-                                   Table.addView(btnTag);
-                                   ((Button) findViewById(100+i)).setOnClickListener(this);
-                                   a=+30;
-                               }*/
-
-
-
-                           }
-
-                    });
-
-                    Table.addView(checkBox,0);
                 }
-                z++;
             }
+        });
+
+        Table.addView(checkBox,0);
+    z++;
+}
+
+protected void checkBoxList(){
+
+    setContentView(R.layout.singleitem);
+    final TableLayout Table = (TableLayout) findViewById(R.id.tablein);
+
+    Button addCheckBox = (Button)findViewById(R.id.addCheckBox);
+
+
+
+    addCheckBox.setOnClickListener(new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+
+
+            addItemsOnSpinner("",Table);
+
         }
 
     });
