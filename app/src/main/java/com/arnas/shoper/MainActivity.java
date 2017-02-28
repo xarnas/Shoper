@@ -45,11 +45,20 @@ public class MainActivity extends AppCompatActivity {
     String[] values= new String[1];
     String checkBoxValue;
 
-    public void addItemsOnSpinner(String checkBoxName, final TableLayout Table) {
+    private int getIndex(Spinner spinner, String myString)
+    {
+        int index = 0;
 
-        if (!checkBoxName.isEmpty()) {
-            checkBoxName="empty";
+        for (int i=0;i<spinner.getCount();i++){
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString)){
+                index = i;
+                break;
+            }
         }
+        return index;
+    }
+
+    public void addItemsOnSpinner(String checkBoxName, final TableLayout Table) {
 
         LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
 
@@ -90,11 +99,25 @@ public class MainActivity extends AppCompatActivity {
         //inputUnit.setText(checkBoxName);
         spinner1.setSelection(2);
 
+        if (!checkBoxName.isEmpty()) {
+            String[] tokens = checkBoxName.split(" ");
+            inputName.setText(tokens[0].toString());
+            inputUnit.setText(tokens[1].toString());
+
+            spinner1.setSelection(getIndex(spinner1, tokens[2].toString()));
+
+        }
 
         btnAcppect.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v){
                 //int z =1;
+                if (inputName.getText().toString().isEmpty() || inputUnit.getText().toString().isEmpty()){
+                    Toast.makeText(getApplicationContext(),
+                            "Užpildykite visus laukus", Toast.LENGTH_LONG)
+                            .show();
+                    return;
+                }
                 checkBoxValue=inputName.getText().toString()+" "+inputUnit.getText().toString()+" "+spinner1.getSelectedItem().toString();
                 final CheckBox checkBox = new CheckBox(getApplicationContext());
                 checkBox.setText(checkBoxValue);
