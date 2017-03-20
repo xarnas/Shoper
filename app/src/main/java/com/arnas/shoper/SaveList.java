@@ -11,10 +11,18 @@ public class SaveList {
 
     List<DyGroceriesList3> list = new ArrayList<DyGroceriesList3>();
 
-    public void addList(int id,DyGroceriesList3 dg3) {
+    private int getAdapterItemPosition(int id)
+    {
+        for (int position=0; position < list.size(); position++)
+            if (list.get(position).getId() == id)
+                return position;
+        return 0;
+    }
+
+    public void addList(DyGroceriesList3 dg3) {
 
       //  list.add(dg3);
-       list.add(id,dg3);
+       list.add(dg3);
     }
     public List returnList()
     {
@@ -23,7 +31,8 @@ public class SaveList {
 
     public void removeItem(int id){
 
-        DyGroceriesList3 dg3 = singleItem(id);
+        int possition = getAdapterItemPosition(id);
+        DyGroceriesList3 dg3 = singleItem(possition);
 
         list.remove(dg3);
     }
@@ -32,6 +41,7 @@ public class SaveList {
     }
 
     public DyGroceriesList3 singleItem(int id){
+
         return list.get(id);
     }
 

@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
                     final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
                     checkBoxNew.setId(xcount);
                     DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(),inputName.getText().toString(),inputUnit.getText().toString(),spinner1.getSelectedItem().toString());
-                    save.addList(xcount,dg3);
+                    save.addList(dg3);
                     xcount+=1;
                     checkBoxNew.setText(checkBoxValue);
                     checcBoxFuncionality(Table,checkBoxNew);
@@ -221,6 +221,7 @@ protected  void checcBoxFuncionality(final TableLayout Table,final CheckBox chec
                                 Toast.makeText(getApplicationContext(),
                                         "Ištrinta prekė "+ checkBox.getText().toString(), Toast.LENGTH_LONG)
                                         .show();
+                                int a = checkBox.getId();
                                 save.removeItem(checkBox.getId());
                                 Table.removeViewAt(nIndex);
                                 Table.removeView(findViewById(100 + nIndex));
