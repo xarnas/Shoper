@@ -43,7 +43,9 @@ public class MainActivity extends AppCompatActivity {
 
     ListView listView ;
     String[] values= new String[1];
+    SaveList save = new SaveList();
     String checkBoxValue;
+    int xcount=0;
 
     private int getIndex(Spinner spinner, String myString)
     {
@@ -58,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         return index;
     }
 
-    public void addItemsOnSpinner(String checkBoxName, final TableLayout Table) {
+    public void addItemsOnSpinner(final CheckBox checkBox, final TableLayout Table) {
 
         LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
 
@@ -94,24 +96,25 @@ public class MainActivity extends AppCompatActivity {
         Button btnAcppect = (Button) popupView.findViewById(R.id.saveitem);
         Button btnDismiss = (Button) popupView.findViewById(R.id.dismiss);
         final EditText inputName = (EditText)popupView.findViewById(R.id.itemName);
-        //inputName.setText(checkBoxName);
+
         final EditText inputUnit = (EditText)popupView.findViewById(R.id.itemUnit);
-        //inputUnit.setText(checkBoxName);
+
         spinner1.setSelection(2);
 
-        if (!checkBoxName.isEmpty()) {
-            String[] tokens = checkBoxName.split(" ");
-            inputName.setText(tokens[0].toString());
-            inputUnit.setText(tokens[1].toString());
+       // if (!checkBox.getText().toString().isEmpty()) {
+        if (checkBox != null){
+            DyGroceriesList3 dgl3=save.singleItem(checkBox.getId());
+            inputName.setText(dgl3.getName().toString());
+            inputUnit.setText(dgl3.getUnit().toString());
 
-            spinner1.setSelection(getIndex(spinner1, tokens[2].toString()));
+            spinner1.setSelection(getIndex(spinner1, dgl3.getListItem().toString()));
 
         }
 
         btnAcppect.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v){
-                //int z =1;
+
                 if (inputName.getText().toString().isEmpty() || inputUnit.getText().toString().isEmpty()){
                     Toast.makeText(getApplicationContext(),
                             "Užpildykite visus laukus", Toast.LENGTH_LONG)
@@ -119,10 +122,27 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
                 checkBoxValue=inputName.getText().toString()+" "+inputUnit.getText().toString()+" "+spinner1.getSelectedItem().toString();
-                final CheckBox checkBox = new CheckBox(getApplicationContext());
-                checkBox.setText(checkBoxValue);
-               // checkBox.setId(10+z);
-                checcBoxFuncionality(Table,checkBox);
+
+                if (checkBox == null) {
+                    final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
+                    checkBoxNew.setId(xcount);
+                    DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(),inputName.getText().toString(),inputUnit.getText().toString(),spinner1.getSelectedItem().toString());
+                    save.addList(xcount,dg3);
+                    xcount+=1;
+                    checkBoxNew.setText(checkBoxValue);
+                    checcBoxFuncionality(Table,checkBoxNew);
+                } else {
+                        DyGroceriesList3 dg3 =  save.singleItem(checkBox.getId());
+                        dg3.setName(inputName.getText().toString());
+                        dg3.setUnit(inputUnit.getText().toString());
+                        dg3.setListItem(spinner1.getSelectedItem().toString());
+                        checkBox.setText(checkBoxValue);
+
+
+                }
+
+
+
                 popupWindow.dismiss();
 
             }
@@ -141,7 +161,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 protected  void checcBoxFuncionality(final TableLayout Table,final CheckBox checkBox){
-    int z =1;
         checkBox.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -188,7 +207,7 @@ protected  void checcBoxFuncionality(final TableLayout Table,final CheckBox chec
                             @Override
                             public void onClick(View v) {
 
-                                addItemsOnSpinner(checkBox.getText().toString(),Table);
+                                addItemsOnSpinner(checkBox,Table);
 
 
                             }
@@ -202,6 +221,7 @@ protected  void checcBoxFuncionality(final TableLayout Table,final CheckBox chec
                                 Toast.makeText(getApplicationContext(),
                                         "Ištrinta prekė "+ checkBox.getText().toString(), Toast.LENGTH_LONG)
                                         .show();
+                                save.removeItem(checkBox.getId());
                                 Table.removeViewAt(nIndex);
                                 Table.removeView(findViewById(100 + nIndex));
                             }
@@ -231,7 +251,7 @@ protected  void checcBoxFuncionality(final TableLayout Table,final CheckBox chec
         });
 
         Table.addView(checkBox,0);
-    z++;
+
 }
 
 protected void checkBoxList(){
@@ -249,7 +269,7 @@ protected void checkBoxList(){
         public void onClick(View v) {
 
 
-            addItemsOnSpinner("",Table);
+            addItemsOnSpinner(null,Table);
 
         }
 
