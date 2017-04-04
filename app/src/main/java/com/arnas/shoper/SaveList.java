@@ -19,6 +19,17 @@ public class SaveList {
         return 0;
     }
 
+    public ArrayList<DyGroceriesList3> fullListHead(int headid){
+        List<DyGroceriesList3> tmplist = new ArrayList<DyGroceriesList3>();
+
+        for (DyGroceriesList3 object: list) {
+          if (object.HeadId==headid){
+              tmplist.add(object);
+          }
+        }
+        return (ArrayList<DyGroceriesList3>) tmplist;
+    }
+
     public void addList(DyGroceriesList3 dg3) {
 
       //  list.add(dg3);

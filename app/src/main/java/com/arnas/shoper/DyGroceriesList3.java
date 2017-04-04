@@ -9,8 +9,18 @@ public class DyGroceriesList3 extends AppCompatActivity {
     protected String Name;
     protected String Unit;
     protected String ListItem;
+    protected int HeadId;
     protected int id;
 
+
+    public int getHeadId(){
+        return HeadId;
+    }
+
+    public void setHeadId(int headId){
+
+        this.HeadId=headId;
+    }
     public int getId() {
         return id;
     }
@@ -20,11 +30,12 @@ public class DyGroceriesList3 extends AppCompatActivity {
     }
 
 
-    DyGroceriesList3(int id,String Name, String Unit, String ListItem){
+    DyGroceriesList3(int id,String Name, String Unit, String ListItem,int headId){
         setName(Name);
         setUnit(Unit);
         setListItem(ListItem);
         setId(id);
+        setHeadId(headId);
     }
 
 

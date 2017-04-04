@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     SaveList save = new SaveList();
     String checkBoxValue;
     int xcount=0;
+    int headid =0;
 
     private int getIndex(Spinner spinner, String myString)
     {
@@ -59,6 +61,36 @@ public class MainActivity extends AppCompatActivity {
         }
         return index;
     }
+    public void mainListItem(final CheckBox checkBox, final TableLayout Table, String Course,int headid) {
+
+
+
+        if (checkBox != null){
+            //TODO load item list
+
+        }
+                checkBoxValue=Course;
+
+                if (checkBox == null) {
+                    final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
+                    checkBoxNew.setId(headid);
+                    //DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(),inputName.getText().toString(),inputUnit.getText().toString(),spinner1.getSelectedItem().toString());
+                    //save.addList(dg3);
+                    //xcount+=1;
+                    checkBoxNew.setText(checkBoxValue);
+                    checcBoxFuncionality(Table,checkBoxNew,1);
+                } else {
+                   /* DyGroceriesList3 dg3 =  save.singleItem(checkBox.getId());
+                    dg3.setName(inputName.getText().toString());
+                    dg3.setUnit(inputUnit.getText().toString());
+                    dg3.setListItem(spinner1.getSelectedItem().toString());
+                    checkBox.setText(checkBoxValue);*/
+
+                }
+
+
+            }
+
 
     public void addItemsOnSpinner(final CheckBox checkBox, final TableLayout Table) {
 
@@ -126,11 +158,11 @@ public class MainActivity extends AppCompatActivity {
                 if (checkBox == null) {
                     final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
                     checkBoxNew.setId(xcount);
-                    DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(),inputName.getText().toString(),inputUnit.getText().toString(),spinner1.getSelectedItem().toString());
+                    DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(),inputName.getText().toString(),inputUnit.getText().toString(),spinner1.getSelectedItem().toString(),headid);
                     save.addList(dg3);
                     xcount+=1;
                     checkBoxNew.setText(checkBoxValue);
-                    checcBoxFuncionality(Table,checkBoxNew);
+                    checcBoxFuncionality(Table,checkBoxNew,0);
                 } else {
                         DyGroceriesList3 dg3 =  save.singleItem(checkBox.getId());
                         dg3.setName(inputName.getText().toString());
@@ -160,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
 
     }
-protected  void checcBoxFuncionality(final TableLayout Table,final CheckBox checkBox){
+protected  void checcBoxFuncionality(final TableLayout Table, final CheckBox checkBox, final int indicator){
         checkBox.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -206,12 +238,14 @@ protected  void checcBoxFuncionality(final TableLayout Table,final CheckBox chec
                         text1.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-
-                                addItemsOnSpinner(checkBox,Table);
-
+                               if (indicator == 0) {
+                                    addItemsOnSpinner(checkBox, Table);
+                                }else{
+                                  ArrayList<DyGroceriesList3> tmplist = save.fullListHead(checkBox.getId());
+                                   checkBoxList(checkBox.getText().toString(),tmplist);
+                                }
 
                             }
-
                         });
 
 
@@ -255,15 +289,24 @@ protected  void checcBoxFuncionality(final TableLayout Table,final CheckBox chec
 
 }
 
-protected void checkBoxList(){
+protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
 
     setContentView(R.layout.singleitem);
     final TableLayout Table = (TableLayout) findViewById(R.id.tablein);
 
     Button addCheckBox = (Button)findViewById(R.id.addCheckBox);
+    Button backToMainMenu = (Button)findViewById(R.id.backToMainMenu);
+    Button saveMyItems = (Button)findViewById(R.id.saveMyItems);
 
-
-
+     final TextView titleView = (TextView)findViewById(R.id.titleName);
+      titleView.setText(name);
+    if (tmplist != null) {
+        for (DyGroceriesList3 object : tmplist) {
+            final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
+            checkBoxNew.setId(object.getId());
+            checkBoxNew.setText(object.getName());
+        }
+    }
     addCheckBox.setOnClickListener(new View.OnClickListener() {
 
         @Override
@@ -273,32 +316,114 @@ protected void checkBoxList(){
             addItemsOnSpinner(null,Table);
 
         }
-
     });
+    backToMainMenu.setOnClickListener(new View.OnClickListener(){
+        @Override
+        public void onClick(View v){
+            setContentView(R.layout.activity_main);
+        }
+    });
+
+    saveMyItems.setOnClickListener(new View.OnClickListener(){
+        @Override
+        public void onClick(View v){
+
+            setContentView(R.layout.content_main);
+
+            final TableLayout Table = (TableLayout) findViewById(R.id.myMainList);
+
+
+                 mainListItem(null,Table,titleView.getText().toString(),headid);
+                 headid+=1;
+            Button btnnewList = (Button) findViewById(R.id.newList);
+            Button btnnewCategory = (Button) findViewById(R.id.newCategory);
+
+            btnnewList.setOnClickListener(new Button.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    newList();
+
+
+                }
+            });
+
+            btnnewCategory.setOnClickListener(new Button.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    setContentView(R.layout.categorylistm);
+                }
+            });
+
+
+        }
+    });
+
+}
+
+
+
+
+protected void newList(){
+     
+    LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+    final View popupView1 = layoutInflater.inflate(R.layout.newlisti, null);
+    final PopupWindow popupWindow1 = new PopupWindow(popupView1, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+
+
+    Button btnAcppectList = (Button) popupView1.findViewById(R.id.saveItemList);
+    Button btnDismissList = (Button) popupView1.findViewById(R.id.dismissList);
+
+    final EditText inputName = (EditText)popupView1.findViewById(R.id.itemNameList);
+
+
+    btnAcppectList.setOnClickListener(new Button.OnClickListener(){
+        @Override
+        public void onClick(View v){
+
+            checkBoxList(inputName.getText().toString(),null);
+            popupWindow1.dismiss();
+
+        }
+    });
+
+    btnDismissList.setOnClickListener(new Button.OnClickListener(){
+        @Override
+        public void onClick(View v){
+            popupWindow1.dismiss();
+
+        }
+    });
+
+
+    popupWindow1.showAtLocation(popupView1, Gravity.CENTER, 0, 0);
+
+
 }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        Button btnnewList = (Button) findViewById(R.id.newList);
+        Button btnnewCategory = (Button) findViewById(R.id.newCategory);
 
+        btnnewList.setOnClickListener(new Button.OnClickListener(){
             @Override
-            public void onClick(View view) {
-               // Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                //   .setAction("Action", null).show()
+            public void onClick(View v) {
+                    newList();
 
-               // values[0]="Ramune";
-                // listView.invalidateViews();
 
-                checkBoxList();
             }
         });
 
-        values[0]="Arnas";
+        btnnewCategory.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                setContentView(R.layout.categorylistm);
+            }
+        });
+
+      /*  values[0]="Arnas";
         this.listView = (ListView)findViewById(R.id.list);
 
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -319,11 +444,11 @@ protected void checkBoxList(){
                             .show();
 
 
-                    checkBoxList();
+                   checkBoxList();
 
                 }
 
-            });
+            });*/
 
     }
 
