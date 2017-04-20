@@ -64,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
     public void mainListItem(final CheckBox checkBox, final TableLayout Table, String Course,int headid) {
 
 
-
         if (checkBox != null){
             //TODO load item list
 
@@ -78,7 +77,11 @@ public class MainActivity extends AppCompatActivity {
                     //save.addList(dg3);
                     //xcount+=1;
                     checkBoxNew.setText(checkBoxValue);
+                    DyMealsList3 DML3 = new DyMealsList3(headid,Course);
+                    save.addListDML3(DML3);
                     checcBoxFuncionality(Table,checkBoxNew,1);
+
+
                 } else {
                    /* DyGroceriesList3 dg3 =  save.singleItem(checkBox.getId());
                     dg3.setName(inputName.getText().toString());
@@ -128,7 +131,6 @@ public class MainActivity extends AppCompatActivity {
         Button btnAcppect = (Button) popupView.findViewById(R.id.saveitem);
         Button btnDismiss = (Button) popupView.findViewById(R.id.dismiss);
         final EditText inputName = (EditText)popupView.findViewById(R.id.itemName);
-
         final EditText inputUnit = (EditText)popupView.findViewById(R.id.itemUnit);
 
         spinner1.setSelection(2);
@@ -169,8 +171,6 @@ public class MainActivity extends AppCompatActivity {
                         dg3.setUnit(inputUnit.getText().toString());
                         dg3.setListItem(spinner1.getSelectedItem().toString());
                         checkBox.setText(checkBoxValue);
-
-
                 }
 
 
@@ -293,7 +293,6 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
 
     setContentView(R.layout.singleitem);
     final TableLayout Table = (TableLayout) findViewById(R.id.tablein);
-
     Button addCheckBox = (Button)findViewById(R.id.addCheckBox);
     Button backToMainMenu = (Button)findViewById(R.id.backToMainMenu);
     Button saveMyItems = (Button)findViewById(R.id.saveMyItems);
@@ -305,13 +304,13 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
             final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
             checkBoxNew.setId(object.getId());
             checkBoxNew.setText(object.getName());
+            checcBoxFuncionality(Table,checkBoxNew,0);
         }
     }
     addCheckBox.setOnClickListener(new View.OnClickListener() {
 
         @Override
         public void onClick(View v) {
-
 
             addItemsOnSpinner(null,Table);
 
@@ -321,6 +320,16 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
         @Override
         public void onClick(View v){
             setContentView(R.layout.activity_main);
+
+                  final List<DyMealsList3> tmpheadlist = save.fullListDML3();
+
+            for (DyMealsList3 object:tmpheadlist){
+                    final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
+                    checkBoxNew.setId(object.getId());
+                    checkBoxNew.setText(object.getName());
+                    checcBoxFuncionality(Table,checkBoxNew,1);
+
+            }
         }
     });
 
@@ -328,13 +337,11 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
         @Override
         public void onClick(View v){
 
-            setContentView(R.layout.content_main);
+            setContentView(R.layout.activity_main);
 
-            final TableLayout Table = (TableLayout) findViewById(R.id.myMainList);
-
-
-                 mainListItem(null,Table,titleView.getText().toString(),headid);
-                 headid+=1;
+            final TableLayout TableMain = (TableLayout) findViewById(R.id.myMainList);
+            mainListItem(null,TableMain,titleView.getText().toString(),headid);
+            headid+=1;
             Button btnnewList = (Button) findViewById(R.id.newList);
             Button btnnewCategory = (Button) findViewById(R.id.newCategory);
 
@@ -380,6 +387,7 @@ protected void newList(){
         @Override
         public void onClick(View v){
 
+
             checkBoxList(inputName.getText().toString(),null);
             popupWindow1.dismiss();
 
@@ -402,6 +410,7 @@ protected void newList(){
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         Button btnnewList = (Button) findViewById(R.id.newList);
@@ -411,7 +420,6 @@ protected void newList(){
             @Override
             public void onClick(View v) {
                     newList();
-
 
             }
         });

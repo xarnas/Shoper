@@ -10,6 +10,7 @@ import java.util.List;
 public class SaveList {
 
     List<DyGroceriesList3> list = new ArrayList<DyGroceriesList3>();
+    List<DyMealsList3> list2 = new ArrayList<DyMealsList3>();
 
     private int getAdapterItemPosition(int id)
     {
@@ -63,5 +64,13 @@ public class SaveList {
             }
         }
         return false;
+    }
+
+    public void addListDML3(DyMealsList3 meal){
+        list2.add(meal);
+    }
+    public List<DyMealsList3> fullListDML3(){
+
+        return list2;
     }
 }

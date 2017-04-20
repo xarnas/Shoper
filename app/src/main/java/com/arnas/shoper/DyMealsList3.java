@@ -2,6 +2,9 @@ package com.arnas.shoper;
 
 import android.support.v7.app.AppCompatActivity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by arnaspetrauskas on 04/04/2017.
  */
@@ -30,6 +33,8 @@ public class DyMealsList3 extends AppCompatActivity {
         public void setName(String name) {
             Name = name;
         }
+
+
 
 
 
