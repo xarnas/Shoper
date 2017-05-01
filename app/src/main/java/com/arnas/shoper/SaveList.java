@@ -11,6 +11,37 @@ public class SaveList {
 
     List<DyGroceriesList3> list = new ArrayList<DyGroceriesList3>();
     List<DyMealsList3> list2 = new ArrayList<DyMealsList3>();
+    List<CategoryList> cList = new ArrayList<CategoryList>();
+    int catid=0;
+
+SaveList(){
+
+    String[] myCat = {"Pieno gaminiai ir kiaušiniai",
+                        "Mėsa",
+                        "Žuvis",
+                        "Miltiniai gaminiai ir košės",
+                        "Duonos gaminiai ir konditerija",
+                        "Daržovės ir vaisiai",
+                        "Higienos prekės",
+                        "Konservuoti gaminiai",
+                        "Kava,Kakava ir Arbata",
+                        "Saldumynai",
+                        "Šaldytas maistas",
+                        "Namų priežiuros prekės",
+                        "Kūdikiu ir vaikų prekės",
+                        "Alkoholiniai gėrimai"
+                       };
+    for(int i=0; i <myCat.length-1 ;i++){
+        this.catid+=1;
+        CategoryList ct1 = new CategoryList(catid,myCat[i]);
+        addCategory(ct1);
+
+    }
+
+
+
+}
+
 
     private int getAdapterItemPosition(int id)
     {
@@ -69,8 +100,19 @@ public class SaveList {
     public void addListDML3(DyMealsList3 meal){
         list2.add(meal);
     }
+
     public List<DyMealsList3> fullListDML3(){
 
         return list2;
     }
+
+    public void addCategory(CategoryList cl){
+        cList.add(cl);
+    }
+
+    public List<CategoryList> fullListCATG(){
+
+        return cList;
+    }
+
 }

@@ -10,8 +10,12 @@ import java.util.List;
 public class CategoryList {
     public int id;
     public String name;
-    List<CategoryList> cList = new ArrayList<CategoryList>();
 
+    CategoryList(int id,String cat){
+        setId(id);
+        setName(cat);
+
+    }
     public int getId() {
         return id;
     }
@@ -27,11 +31,5 @@ public class CategoryList {
     public void setName(String name) {
         this.name = name;
     }
-    public void addCategory(CategoryList cl){
-       cList.add(cl);
-    }
 
-    public CategoryList singleList(CategoryList cl){
-       return cList.get(cl.getId());
-    }
 }

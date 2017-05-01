@@ -65,21 +65,21 @@ public class MainActivity extends AppCompatActivity {
 
 
         if (checkBox != null){
-            //TODO load item list
+
 
         }
                 checkBoxValue=Course;
 
                 if (checkBox == null) {
-                    final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
-                    checkBoxNew.setId(headid);
+                    //final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
+                    //checkBoxNew.setId(headid);
                     //DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(),inputName.getText().toString(),inputUnit.getText().toString(),spinner1.getSelectedItem().toString());
                     //save.addList(dg3);
                     //xcount+=1;
-                    checkBoxNew.setText(checkBoxValue);
+                    //checkBoxNew.setText(checkBoxValue);
                     DyMealsList3 DML3 = new DyMealsList3(headid,Course);
                     save.addListDML3(DML3);
-                    checcBoxFuncionality(Table,checkBoxNew,1);
+                    ///checcBoxFuncionality(Table,checkBoxNew,1);
 
 
                 } else {
@@ -108,9 +108,14 @@ public class MainActivity extends AppCompatActivity {
         final Spinner spinner1 = (Spinner) popupWindow.getContentView().findViewById(R.id.spinner1);
 
         List<String> list = new ArrayList<String>();
-        list.add("list 1");
-        list.add("list 2");
-        list.add("list 3");
+        final List<CategoryList> tmpCatlist = save.fullListCATG();
+
+        for (CategoryList object:tmpCatlist){
+           list.add(object.getName().toString());
+        }
+
+
+      
 
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, list);
@@ -319,15 +324,36 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
     backToMainMenu.setOnClickListener(new View.OnClickListener(){
         @Override
         public void onClick(View v){
+
             setContentView(R.layout.activity_main);
 
-                  final List<DyMealsList3> tmpheadlist = save.fullListDML3();
+            final TableLayout TableMain = (TableLayout) findViewById(R.id.myMainList);
+            Button btnnewList = (Button) findViewById(R.id.newList);
+            Button btnnewCategory = (Button) findViewById(R.id.newCategory);
+
+            btnnewList.setOnClickListener(new Button.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    newList();
+                }
+            });
+
+            btnnewCategory.setOnClickListener(new Button.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    setContentView(R.layout.categorylistm);
+                }
+            });
+
+
+
+            final List<DyMealsList3> tmpheadlist = save.fullListDML3();
 
             for (DyMealsList3 object:tmpheadlist){
                     final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
                     checkBoxNew.setId(object.getId());
                     checkBoxNew.setText(object.getName());
-                    checcBoxFuncionality(Table,checkBoxNew,1);
+                    checcBoxFuncionality(TableMain,checkBoxNew,1);
 
             }
         }
@@ -345,23 +371,29 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
             Button btnnewList = (Button) findViewById(R.id.newList);
             Button btnnewCategory = (Button) findViewById(R.id.newCategory);
 
-            btnnewList.setOnClickListener(new Button.OnClickListener(){
-                @Override
-                public void onClick(View v) {
-                    newList();
+                            btnnewList.setOnClickListener(new Button.OnClickListener(){
+                                @Override
+                                public void onClick(View v) {
+                                    newList();
+                                }
+                            });
 
+                            btnnewCategory.setOnClickListener(new Button.OnClickListener(){
+                                @Override
+                                public void onClick(View v) {
+                                    setContentView(R.layout.categorylistm);
+                                }
+                            });
 
-                }
-            });
+            final List<DyMealsList3> tmpheadlist = save.fullListDML3();
 
-            btnnewCategory.setOnClickListener(new Button.OnClickListener(){
-                @Override
-                public void onClick(View v) {
-                    setContentView(R.layout.categorylistm);
-                }
-            });
+            for (DyMealsList3 object:tmpheadlist){
+                final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
+                checkBoxNew.setId(object.getId());
+                checkBoxNew.setText(object.getName());
+                checcBoxFuncionality(TableMain,checkBoxNew,1);
 
-
+            }
         }
     });
 
@@ -431,32 +463,6 @@ protected void newList(){
             }
         });
 
-      /*  values[0]="Arnas";
-        this.listView = (ListView)findViewById(R.id.list);
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                    android.R.layout.simple_list_item_1, android.R.id.text1, this.values);
-
-            this.listView.setAdapter(adapter);
-
-            this.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view,
-                                        int position, long id) {
-
-                    int itemPosition = position;
-                    String itemValue = (String) listView.getItemAtPosition(position);
-                    Toast.makeText(getApplicationContext(),
-                            "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
-                            .show();
-
-
-                   checkBoxList();
-
-                }
-
-            });*/
 
     }
 
