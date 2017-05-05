@@ -201,16 +201,20 @@ public class MainActivity extends AppCompatActivity {
 
 
     protected  void TxtViewFuncionality(final TableLayout Table, final TextView TxtView, final int indicator){
-        TxtView.setOnClickListener(new View.OnClickListener(){
 
+
+        TxtView.setOnClickListener(new View.OnClickListener(){
+            boolean lock = false;
             @Override
             public void onClick(View v) {
                 for (int i = 0; i < 1; i++) {
-                    if (!TxtView.isClickable()) {
-                        final int nIndex = Table.indexOfChild(TxtView);
-                        Table.removeView(findViewById(100 + nIndex));
+                    //if (!TxtView.isClickable()) {
+                      //  final int nIndex = Table.indexOfChild(TxtView);
+                      //  Table.removeView(findViewById(100 + nIndex));
 
-                    } else {
+                    //} else {
+                    if (!lock) {
+                        lock =true;
                         final int nIndex = Table.indexOfChild(TxtView);
                         TableRow row = new TableRow(getApplicationContext());
 
@@ -264,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
                                         "Ištrinta prekė "+ TxtView.getText().toString(), Toast.LENGTH_LONG)
                                         .show();
                                 int a = TxtView.getId();
-                                save.removeItem(TxtView.getId());
+                                //save.removeItem(TxtView.getId());
                                 Table.removeViewAt(nIndex);
                                 Table.removeView(findViewById(100 + nIndex));
                             }
@@ -275,6 +279,7 @@ public class MainActivity extends AppCompatActivity {
                            /*     Toast.makeText(getApplicationContext(),
                                         "Cancel ME!!!", Toast.LENGTH_LONG)
                                         .show();*/
+                                lock = false;
                                 final int nIndex = Table.indexOfChild(TxtView);
                                 Table.removeView(findViewById(100 + nIndex));
                             }
