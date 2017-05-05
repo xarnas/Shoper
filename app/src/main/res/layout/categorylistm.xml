@@ -2,16 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/content_main"
+    android:id="@+id/categorylist"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.arnas.shoper.MainActivity"
-    tools:showIn="@layout/activity_main">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 
     <ScrollView
@@ -22,7 +20,7 @@
         android:layout_weight="0.96">
 
         <TableLayout
-            android:id="@+id/myMainList"
+            android:id="@+id/cattbl"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -55,13 +53,6 @@
         android:layout_alignParentStart="true"
         android:id="@+id/linearLayout"
         android:weightSum="1">
-
-        <Button
-            android:id="@+id/newList"
-            android:layout_width="159dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="32dp"
-            android:text="Sukurti naują sąrašą" />
 
         <Button
             android:id="@+id/newCategory"
