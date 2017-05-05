@@ -29,6 +29,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -115,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-      
+
 
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, list);
@@ -195,6 +196,104 @@ public class MainActivity extends AppCompatActivity {
 
         //popupWindow.showAsDropDown(text1, 50, -30);
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+    }
+
+
+    protected  void TxtViewFuncionality(final TableLayout Table, final TextView TxtView, final int indicator){
+        TxtView.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                for (int i = 0; i < 1; i++) {
+                    if (!TxtView.isClickable()) {
+                        final int nIndex = Table.indexOfChild(TxtView);
+                        Table.removeView(findViewById(100 + nIndex));
+
+                    } else {
+                        final int nIndex = Table.indexOfChild(TxtView);
+                        TableRow row = new TableRow(getApplicationContext());
+
+
+                        Table.setGravity(Gravity.CENTER);
+                        //Table.setBackgroundResource(Color.MAGENTA);
+
+
+                        final TextView text1 = new TextView(getApplicationContext());
+                        TextView text2 = new TextView(getApplicationContext());
+                        TextView text3 = new TextView(getApplicationContext());
+                        row.setId(100 + nIndex);
+                        text1.setText(" Edit ");
+                        row.addView(text1);
+                        text2.setText("Delete ");
+                        row.addView(text2);
+                        text3.setText("Cancel");
+                        row.addView(text3);
+
+                           /* Button btnTag1 = new Button(getApplicationContext());
+                            btnTag1.setId(101+1);
+                            row.addView(btnTag1);
+                            ((Button) findViewById(101+1)).setOnClickListener(this);
+                            Button btnTag2 = new Button(getApplicationContext());
+                            btnTag2.setId(102);
+                            row.addView(btnTag2);
+                            ((Button) findViewById(102)).setOnClickListener(this);
+                            Button btnTag3 = new Button(getApplicationContext());
+                            btnTag3.setId(103);
+                            row.addView(btnTag3);
+                            ((Button) findViewById(103)).setOnClickListener(this);*/
+
+                        text1.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (indicator == 0) {
+                                  //  addItemsOnSpinner(TxtView, Table);
+                                }else{
+                                    //ArrayList<DyGroceriesList3> tmplist = save.fullListHead(checkBox.getId());
+                                    //checkBoxList(checkBox.getText().toString(),tmplist);
+                                }
+
+                            }
+                        });
+
+
+                        text2.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Toast.makeText(getApplicationContext(),
+                                        "Ištrinta prekė "+ TxtView.getText().toString(), Toast.LENGTH_LONG)
+                                        .show();
+                                int a = TxtView.getId();
+                                save.removeItem(TxtView.getId());
+                                Table.removeViewAt(nIndex);
+                                Table.removeView(findViewById(100 + nIndex));
+                            }
+                        });
+                        text3.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                           /*     Toast.makeText(getApplicationContext(),
+                                        "Cancel ME!!!", Toast.LENGTH_LONG)
+                                        .show();*/
+                                final int nIndex = Table.indexOfChild(TxtView);
+                                Table.removeView(findViewById(100 + nIndex));
+                            }
+                        });
+
+                        Table.addView(row, nIndex + 1);
+                    }
+                           /* Toast.makeText(getApplicationContext(),
+                                    "Position :" + checkBox.getId() + "  ListItem : " + checkBox.getText(), Toast.LENGTH_LONG)
+                                    .show();*/
+
+                    int moveckbox = TxtView.getId() + 1;
+
+
+                }
+            }
+        });
+
+        Table.addView(TxtView,0);
 
     }
 protected  void checcBoxFuncionality(final TableLayout Table, final CheckBox checkBox, final int indicator){
@@ -342,6 +441,7 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
                 @Override
                 public void onClick(View v) {
                     setContentView(R.layout.categorylistm);
+                    save.fullListCATG();
                 }
             });
 
@@ -382,6 +482,13 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
                                 @Override
                                 public void onClick(View v) {
                                     setContentView(R.layout.categorylistm);
+                                    final List<CategoryList> tmpCatlist = save.fullListCATG();
+                                    final TableLayout tbname = (TableLayout) findViewById(R.id.cattbl);
+                                    for (CategoryList object:tmpCatlist){
+                                        TextView newCatItem = new TextView(getApplicationContext());
+                                        newCatItem.setText(object.getName().toString());
+                                         tbname.addView(newCatItem,0);
+                                    }
                                 }
                             });
 
@@ -459,7 +566,15 @@ protected void newList(){
         btnnewCategory.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v) {
-                setContentView(R.layout.categorylistm);
+                    setContentView(R.layout.categorylistm);
+                    final List<CategoryList> tmpCatlist = save.fullListCATG();
+                    final TableLayout tbname = (TableLayout) findViewById(R.id.cattbl);
+                    for (CategoryList object:tmpCatlist){
+                        TextView newCatItem = new TextView(getApplicationContext());
+                        newCatItem.setText(object.getName().toString());
+                        TxtViewFuncionality(tbname,newCatItem,0);
+                    }
+
             }
         });
 

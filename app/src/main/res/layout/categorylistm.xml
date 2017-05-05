@@ -12,18 +12,15 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 
-
-
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="74dp"
-        android:layout_weight="0.96"
         android:layout_above="@+id/linearLayout"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:layout_weight="0.96">
 
         <TableLayout
-            android:id="@+id/tablein"
+            android:id="@+id/cattbl"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
