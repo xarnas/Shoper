@@ -36,6 +36,14 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RunnableFuture;
@@ -46,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     ListView listView ;
     String[] values= new String[1];
     SaveList save = new SaveList();
+    FileReadWrite frw = new FileReadWrite();
     String checkBoxValue;
     int xcount=0;
     int headid =0;
@@ -80,6 +89,9 @@ public class MainActivity extends AppCompatActivity {
                     //checkBoxNew.setText(checkBoxValue);
                     DyMealsList3 DML3 = new DyMealsList3(headid,Course);
                     save.addListDML3(DML3);
+                    String tmpsumname=Course+":"+String.valueOf(headid)+";";
+                    FileWrite("MainMenu",tmpsumname);
+
                     ///checcBoxFuncionality(Table,checkBoxNew,1);
 
 
@@ -167,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
                     final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
                     checkBoxNew.setId(xcount);
                     DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(),inputName.getText().toString(),inputUnit.getText().toString(),spinner1.getSelectedItem().toString(),headid);
+                    FileWrite("Groceries",inputName.getText().toString()+":"+inputUnit.getText().toString()+":"+spinner1.getSelectedItem().toString()+":"+String.valueOf(xcount) + ":"+ String.valueOf(headid)+";");
                     save.addList(dg3);
                     xcount+=1;
                     checkBoxNew.setText(checkBoxValue);
@@ -177,6 +190,34 @@ public class MainActivity extends AppCompatActivity {
                         dg3.setUnit(inputUnit.getText().toString());
                         dg3.setListItem(spinner1.getSelectedItem().toString());
                         checkBox.setText(checkBoxValue);
+                         String[] tokens = FileRead("Groceries").split(";");
+                    String tmpfilestr="";
+                    String tmpfilestr2="";
+                    boolean reWrite=false;
+                    for (String t : tokens) {
+
+                        String[] tokens2 = t.split(":");
+                        if (tokens2[3].equals(String.valueOf(checkBox.getId()))){
+
+                            if(!tokens2[0].equals(inputName.getText().toString())
+                                    ||!tokens2[1].equals(inputName.getText().toString())
+                                    ||!tokens[2].equals(inputName.getText().toString())) {
+                                tmpfilestr2=inputName.getText().toString()+":"+inputUnit.getText().toString()+":"+spinner1.getSelectedItem().toString()+":"+String.valueOf(dg3.getId()) + ":"+ String.valueOf(dg3.getHeadId())+";";
+                                tmpfilestr+=tmpfilestr2;
+                                reWrite=true;
+                            }else{
+                            tmpfilestr+=t.toString();
+                        }
+                    }
+                    if (reWrite== true){
+                        ClearFile("Groceries");
+                        FileWrite("Groceries",tmpfilestr);
+                    }
+
+
+
+                }
+
                 }
 
 
@@ -250,12 +291,39 @@ public class MainActivity extends AppCompatActivity {
                         text1.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                if (indicator == 0) {
-                                  //  addItemsOnSpinner(TxtView, Table);
-                                }else{
-                                    //ArrayList<DyGroceriesList3> tmplist = save.fullListHead(checkBox.getId());
-                                    //checkBoxList(checkBox.getText().toString(),tmplist);
-                                }
+
+                                LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                                final View popupViewCat = layoutInflater.inflate(R.layout.category, null);
+                                final PopupWindow popupWindowCat = new PopupWindow(popupViewCat, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+                                Button btnAcppect = (Button) popupViewCat.findViewById(R.id.saveitem);
+                                Button btnDismiss = (Button) popupViewCat.findViewById(R.id.dismiss);
+                                final EditText inputName = (EditText)popupViewCat.findViewById(R.id.itemName);
+                                inputName.setText(TxtView.getText().toString());
+                                btnDismiss.setOnClickListener(new View.OnClickListener(){
+                                    @Override
+                                    public void onClick(View V){
+                                        popupWindowCat.dismiss();
+                                    }
+                                });
+                                btnAcppect.setOnClickListener(new View.OnClickListener(){
+                                    @Override
+                                    public void onClick(View V){
+                                        for (CategoryList object:save.fullListCATG()){
+                                           if (object.getName().equals(TxtView.getText().toString())){
+                                               object.setName(inputName.getText().toString());
+                                               save.UpdateCatItem(object.getId()-1,object);
+                                               TxtView.setText(inputName.getText().toString());
+                                               popupWindowCat.dismiss();
+                                           }
+                                        }
+
+                                    }
+                                });
+
+
+                                popupWindowCat.showAtLocation(popupViewCat, Gravity.CENTER, 0, 0);
+
+
 
                             }
                         });
@@ -265,10 +333,10 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 Toast.makeText(getApplicationContext(),
-                                        "Ištrinta prekė "+ TxtView.getText().toString(), Toast.LENGTH_LONG)
+                                        "Ištrinta kategorija "+ TxtView.getText().toString(), Toast.LENGTH_LONG)
                                         .show();
                                 int a = TxtView.getId();
-                                //save.removeItem(TxtView.getId());
+                                save.removeItemCat(TxtView.getId());
                                 Table.removeViewAt(nIndex);
                                 Table.removeView(findViewById(100 + nIndex));
                             }
@@ -435,18 +503,60 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
             Button btnnewList = (Button) findViewById(R.id.newList);
             Button btnnewCategory = (Button) findViewById(R.id.newCategory);
 
-            btnnewList.setOnClickListener(new Button.OnClickListener(){
+            btnnewList.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
                     newList();
                 }
             });
 
-            btnnewCategory.setOnClickListener(new Button.OnClickListener(){
+            btnnewCategory.setOnClickListener(new View.OnClickListener(){
+
                 @Override
                 public void onClick(View v) {
+
                     setContentView(R.layout.categorylistm);
                     save.fullListCATG();
+
+                    Button catbntNewItem = (Button) findViewById(R.id.newCategoryItem);
+                    Button catbntBack = (Button) findViewById(R.id.backToMainMenu2);
+
+                    catbntNewItem.setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View V){
+
+                            Toast.makeText(getApplicationContext(),
+                                    "testtt ", Toast.LENGTH_LONG)
+                                    .show();
+
+
+                            LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                            final View popupViewCat = layoutInflater.inflate(R.layout.category, null);
+                            final PopupWindow popupWindowCat = new PopupWindow(popupViewCat, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+                            popupWindowCat.showAtLocation(popupViewCat, Gravity.CENTER, 0, 0);
+
+
+                        }
+                    });
+
+
+                    catbntBack.setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View V){
+                            setContentView(R.layout.activity_main);
+                            final TableLayout TableMain = (TableLayout) findViewById(R.id.myMainList);
+                            Button btnnewList = (Button) findViewById(R.id.newList);
+                            Button btnnewCategory = (Button) findViewById(R.id.newCategory);
+
+                            btnnewList.setOnClickListener(new View.OnClickListener(){
+                                @Override
+                                public void onClick(View v) {
+                                    newList();
+                                }
+                            });
+                        }
+                    });
+
                 }
             });
 
@@ -467,7 +577,7 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
     saveMyItems.setOnClickListener(new View.OnClickListener(){
         @Override
         public void onClick(View v){
-
+           // FileWrite("MainMenu",titleView.getText()+":"+headid);
             setContentView(R.layout.activity_main);
 
             final TableLayout TableMain = (TableLayout) findViewById(R.id.myMainList);
@@ -492,7 +602,7 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
                                     for (CategoryList object:tmpCatlist){
                                         TextView newCatItem = new TextView(getApplicationContext());
                                         newCatItem.setText(object.getName().toString());
-                                         tbname.addView(newCatItem,0);
+                                        tbname.addView(newCatItem,0);
                                     }
                                 }
                             });
@@ -551,11 +661,103 @@ protected void newList(){
 
 
 }
+    public void FileWrite(String fileName,String Message) {
+
+        //String Message = "Arnas Test";
+
+        //tring fileName ="MainMenu";
+
+        try{
+            FileOutputStream fileOutputStream = this.openFileOutput(fileName,MODE_APPEND);
+            fileOutputStream.write(Message.getBytes());
+            fileOutputStream.close();
+        }catch(FileNotFoundException e){
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+    public String FileRead(String fileName){
+        StringBuilder stringBuilder = new StringBuilder();
+        String Message;
+        try{
+
+            FileInputStream fileInputStream = this.openFileInput(fileName);
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            while ((Message=bufferedReader.readLine())!=null){
+                stringBuilder.append(Message+"\n");
+            }
+        }catch(FileNotFoundException e){
+            e.printStackTrace();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+        return stringBuilder.toString();
+    }
+    public void ClearFile(String fileName){
+        String Message = "";
+        try{
+            FileOutputStream fileOutputStream = this.openFileOutput(fileName,MODE_PRIVATE);
+            fileOutputStream.write(Message.getBytes());
+            fileOutputStream.close();
+        }catch(FileNotFoundException e){
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public void LoadFullListFromFile(String file){
+
+        final TableLayout Table = (TableLayout) findViewById(R.id.myMainList);
+        String fullList = FileRead(file);
+        String[] tokens = fullList.split(";");
+        // ClearFile("MainMenu");
+        for (String t : tokens) {
+            String[] tokens2 = t.split(":");
+            if (!tokens2[0].isEmpty()) {
+                final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
+                checkBoxNew.setId(Integer.parseInt(tokens2[1]));
+                checkBoxNew.setText(tokens2[0]);
+                DyMealsList3 DML3 = new DyMealsList3(Integer.parseInt(tokens2[1]), tokens2[0]);
+                save.addListDML3(DML3);
+                checcBoxFuncionality(Table, checkBoxNew, 0);
+            }
+            }
+        }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+      /*  setContentView(R.layout.fileread);
+        Button btnfileWrite = (Button) findViewById(R.id.filewrite);
+        Button btnfileRead = (Button) findViewById(R.id.fileread);
+        final TextView fileoutput = (TextView) findViewById(R.id.filewriteread);
+
+        btnfileWrite.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v){
+
+                 //FileWrite("MainMenu");
+
+                ClearFile("MainMenu");
+            }
+        });
+        btnfileRead.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v){
+               fileoutput.setText(FileRead("MainMenu"));
+            }
+        });*/
+
         setContentView(R.layout.activity_main);
+        LoadFullListFromFile("MainMenu");
 
         Button btnnewList = (Button) findViewById(R.id.newList);
         Button btnnewCategory = (Button) findViewById(R.id.newCategory);
@@ -571,14 +773,79 @@ protected void newList(){
         btnnewCategory.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v) {
-                    setContentView(R.layout.categorylistm);
-                    final List<CategoryList> tmpCatlist = save.fullListCATG();
-                    final TableLayout tbname = (TableLayout) findViewById(R.id.cattbl);
-                    for (CategoryList object:tmpCatlist){
-                        TextView newCatItem = new TextView(getApplicationContext());
-                        newCatItem.setText(object.getName().toString());
-                        TxtViewFuncionality(tbname,newCatItem,0);
+
+                setContentView(R.layout.categorylistm);
+                final List<CategoryList> tmpCatlist = save.fullListCATG();
+                final TableLayout tbname = (TableLayout) findViewById(R.id.cattbl);
+
+                for (CategoryList object:tmpCatlist){
+                    TextView newCatItem = new TextView(getApplicationContext());
+                    newCatItem.setText(object.getName().toString());
+                    TxtViewFuncionality(tbname,newCatItem,0);
+                }
+
+                Button catbntNewItem = (Button) findViewById(R.id.newCategoryItem);
+                Button catbntBack = (Button) findViewById(R.id.backToMainMenu2);
+
+                catbntNewItem.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View V){
+
+                        LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                        final View popupViewCat = layoutInflater.inflate(R.layout.category, null);
+                        final PopupWindow popupWindowCat = new PopupWindow(popupViewCat, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+                        Button btnAcppect = (Button) popupViewCat.findViewById(R.id.saveitem);
+                        Button btnDismiss = (Button) popupViewCat.findViewById(R.id.dismiss);
+                        final EditText inputName = (EditText)popupViewCat.findViewById(R.id.itemName);
+                        btnDismiss.setOnClickListener(new View.OnClickListener(){
+                            @Override
+                            public void onClick(View V){
+                                popupWindowCat.dismiss();
+                            }
+                        });
+                        btnAcppect.setOnClickListener(new View.OnClickListener(){
+                            @Override
+                            public void onClick(View V){
+                                 CategoryList cat = new CategoryList(save.getCatid()+1,inputName.getText().toString());
+                                 save.addCategory(cat);
+                                 save.setCatid(save.getCatid()+1);
+                                 TextView newCatItem = new TextView(getApplicationContext());
+                                 newCatItem.setText(inputName.getText().toString());
+                                 TxtViewFuncionality(tbname,newCatItem,0);
+                                 popupWindowCat.dismiss();
+
+                            }
+                        });
+
+
+                        popupWindowCat.showAtLocation(popupViewCat, Gravity.CENTER, 0, 0);
+
+
                     }
+                });
+
+                catbntBack.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View V){
+                        setContentView(R.layout.activity_main);
+                        final TableLayout TableMain = (TableLayout) findViewById(R.id.myMainList);
+                        Button btnnewList = (Button) findViewById(R.id.newList);
+                        Button btnnewCategory = (Button) findViewById(R.id.newCategory);
+
+                        btnnewList.setOnClickListener(new View.OnClickListener(){
+                            @Override
+                            public void onClick(View v) {
+                                newList();
+                            }
+                        });
+                    }
+                });
+
+
+
+
+
+
 
             }
         });

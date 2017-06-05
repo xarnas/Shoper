@@ -1,5 +1,7 @@
 package com.arnas.shoper;
 
+import android.content.Context;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +14,17 @@ public class SaveList {
     List<DyGroceriesList3> list = new ArrayList<DyGroceriesList3>();
     List<DyMealsList3> list2 = new ArrayList<DyMealsList3>();
     List<CategoryList> cList = new ArrayList<CategoryList>();
-    int catid=0;
+
+
+    public void setCatid(int catid) {
+        this.catid = catid;
+    }
+
+    public int getCatid() {
+        return catid;
+    }
+
+    public int catid=0;
 
 SaveList(){
 
@@ -41,12 +53,22 @@ SaveList(){
 
 
 }
-
+public void UpdateCatItem(int id, CategoryList newName ){
+         cList.set(id,newName);
+}
 
     private int getAdapterItemPosition(int id)
     {
         for (int position=0; position < list.size(); position++)
             if (list.get(position).getId() == id)
+                return position;
+        return 0;
+    }
+
+    private int getAdapterItemPositionCat(int id)
+    {
+        for (int position=0; position < cList.size(); position++)
+            if (cList.get(position).getId() == id)
                 return position;
         return 0;
     }
@@ -66,7 +88,11 @@ SaveList(){
 
       //  list.add(dg3);
        list.add(dg3);
+
+
     }
+
+
     public List returnList()
     {
         return list;
@@ -79,6 +105,15 @@ SaveList(){
 
         list.remove(dg3);
     }
+
+    public void removeItemCat(int id){
+
+        int possition = getAdapterItemPositionCat(id);
+        CategoryList catItem = cList.get(possition);
+
+        cList.remove(catItem);
+    }
+
     public void updateList(int id){
 
     }
@@ -86,6 +121,7 @@ SaveList(){
     public DyGroceriesList3 singleItem(int id){
 
         return list.get(id);
+
     }
 
     boolean contains(int id) {
@@ -99,6 +135,7 @@ SaveList(){
 
     public void addListDML3(DyMealsList3 meal){
         list2.add(meal);
+
     }
 
     public List<DyMealsList3> fullListDML3(){
