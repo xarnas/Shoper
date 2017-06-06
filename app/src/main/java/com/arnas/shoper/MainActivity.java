@@ -719,7 +719,7 @@ protected void newList(){
         // ClearFile("MainMenu");
         for (String t : tokens) {
             String[] tokens2 = t.split(":");
-            if (!tokens2[0].isEmpty()) {
+            if (!tokens2[0].isEmpty() && !tokens2[0].contains("\n"))  {
                 final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
                 checkBoxNew.setId(Integer.parseInt(tokens2[1]));
                 checkBoxNew.setText(tokens2[0]);
@@ -728,7 +728,11 @@ protected void newList(){
                 checcBoxFuncionality(Table, checkBoxNew, 0);
             }
             }
-        }
+        String fullListGR = FileRead("Groceries");
+
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
