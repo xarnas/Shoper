@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     String checkBoxValue;
     int xcount=0;
     int headid =0;
+    boolean editMode=false;
 
     private int getIndex(Spinner spinner, String myString)
     {
@@ -138,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
         spinner1.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                Toast.makeText(getBaseContext(), "Listiner test "+spinner1.getId(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getBaseContext(), "Listiner test "+spinner1.getId(), Toast.LENGTH_SHORT).show();
                 return false;
             }
 
@@ -190,25 +191,25 @@ public class MainActivity extends AppCompatActivity {
                         dg3.setUnit(inputUnit.getText().toString());
                         dg3.setListItem(spinner1.getSelectedItem().toString());
                         checkBox.setText(checkBoxValue);
-                         String[] tokens = FileRead("Groceries").split(";");
+                        String[] tokens = FileRead("Groceries").split(";");
                     String tmpfilestr="";
                     String tmpfilestr2="";
                     boolean reWrite=false;
                     for (String t : tokens) {
-
                         String[] tokens2 = t.split(":");
-                        if (tokens2[3].equals(String.valueOf(checkBox.getId()))){
-
-                            if(!tokens2[0].equals(inputName.getText().toString())
-                                    ||!tokens2[1].equals(inputName.getText().toString())
-                                    ||!tokens[2].equals(inputName.getText().toString())) {
-                                tmpfilestr2=inputName.getText().toString()+":"+inputUnit.getText().toString()+":"+spinner1.getSelectedItem().toString()+":"+String.valueOf(dg3.getId()) + ":"+ String.valueOf(dg3.getHeadId())+";";
-                                tmpfilestr+=tmpfilestr2;
-                                reWrite=true;
-                            }else{
-                            tmpfilestr+=t.toString();
+                        if (!tokens2[0].contains("\n") && !tokens2.toString().isEmpty()) {
+                            if (tokens2[3].equals(String.valueOf(checkBox.getId()))) {
+                                if (!tokens2[0].equals(inputName.getText().toString())
+                                        || !tokens2[1].equals(inputName.getText().toString())
+                                        || !tokens[2].equals(inputName.getText().toString())) {
+                                    tmpfilestr2 = inputName.getText().toString() + ":" + inputUnit.getText().toString() + ":" + spinner1.getSelectedItem().toString() + ":" + String.valueOf(dg3.getId()) + ":" + String.valueOf(dg3.getHeadId()) + ";";
+                                    tmpfilestr += tmpfilestr2;
+                                    reWrite = true;
+                                } else {
+                                    tmpfilestr += t.toString();
+                                }
+                            }
                         }
-                    }
                     if (reWrite== true){
                         ClearFile("Groceries");
                         FileWrite("Groceries",tmpfilestr);
@@ -418,7 +419,8 @@ protected  void checcBoxFuncionality(final TableLayout Table, final CheckBox che
                                if (indicator == 0) {
                                     addItemsOnSpinner(checkBox, Table);
                                 }else{
-                                  ArrayList<DyGroceriesList3> tmplist = save.fullListHead(checkBox.getId());
+                                   editMode = true;
+                                   ArrayList<DyGroceriesList3> tmplist = save.fullListHead(checkBox.getId());
                                    checkBoxList(checkBox.getText().toString(),tmplist);
                                 }
 
@@ -480,8 +482,9 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
         for (DyGroceriesList3 object : tmplist) {
             final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
             checkBoxNew.setId(object.getId());
-            checkBoxNew.setText(object.getName());
+            checkBoxNew.setText(object.getName()+" "+object.getUnit()+" "+object.getListItem());
             checcBoxFuncionality(Table,checkBoxNew,0);
+            xcount+=1;
         }
     }
     addCheckBox.setOnClickListener(new View.OnClickListener() {
@@ -514,7 +517,7 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
 
                 @Override
                 public void onClick(View v) {
-
+                    xcount=0;
                     setContentView(R.layout.categorylistm);
                     save.fullListCATG();
 
@@ -543,6 +546,7 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
                     catbntBack.setOnClickListener(new View.OnClickListener(){
                         @Override
                         public void onClick(View V){
+                            xcount=0;
                             setContentView(R.layout.activity_main);
                             final TableLayout TableMain = (TableLayout) findViewById(R.id.myMainList);
                             Button btnnewList = (Button) findViewById(R.id.newList);
@@ -571,6 +575,8 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
                     checcBoxFuncionality(TableMain,checkBoxNew,1);
 
             }
+            editMode=false;
+            xcount=0;
         }
     });
 
@@ -581,8 +587,11 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
             setContentView(R.layout.activity_main);
 
             final TableLayout TableMain = (TableLayout) findViewById(R.id.myMainList);
+            if (editMode == false) {
             mainListItem(null,TableMain,titleView.getText().toString(),headid);
             headid+=1;
+            }
+
             Button btnnewList = (Button) findViewById(R.id.newList);
             Button btnnewCategory = (Button) findViewById(R.id.newCategory);
 
@@ -610,12 +619,14 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
             final List<DyMealsList3> tmpheadlist = save.fullListDML3();
 
             for (DyMealsList3 object:tmpheadlist){
-                final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
+               final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
                 checkBoxNew.setId(object.getId());
                 checkBoxNew.setText(object.getName());
                 checcBoxFuncionality(TableMain,checkBoxNew,1);
 
             }
+            editMode=false;
+            xcount=0;
         }
     });
 
@@ -712,7 +723,8 @@ protected void newList(){
 
 
     public void LoadFullListFromFile(String file){
-
+        //ClearFile("MainMenu");
+        //ClearFile("Groceries");
         final TableLayout Table = (TableLayout) findViewById(R.id.myMainList);
         String fullList = FileRead(file);
         String[] tokens = fullList.split(";");
@@ -725,10 +737,23 @@ protected void newList(){
                 checkBoxNew.setText(tokens2[0]);
                 DyMealsList3 DML3 = new DyMealsList3(Integer.parseInt(tokens2[1]), tokens2[0]);
                 save.addListDML3(DML3);
-                checcBoxFuncionality(Table, checkBoxNew, 0);
+                checcBoxFuncionality(Table, checkBoxNew, 1);
+                headid+=1;
             }
             }
-        String fullListGR = FileRead("Groceries");
+
+
+            String fullListGR = FileRead("Groceries");
+            String[] tokensGR = fullListGR.split(";");
+            for (String t : tokensGR) {
+            String[] tokens2 = t.split(":");
+            if (!tokens2[0].isEmpty() && !tokens2[0].contains("\n"))  {
+                DyGroceriesList3 DGL3 = new DyGroceriesList3(Integer.parseInt(tokens2[3].toString()),tokens2[0].toString(),tokens2[1].toString(),tokens2[2].toString(),Integer.parseInt(tokens2[4].toString()));
+                save.addList(DGL3);
+
+            }
+        }
+
 
     }
 
@@ -769,6 +794,7 @@ protected void newList(){
         btnnewList.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v) {
+                    xcount=0;
                     newList();
 
             }

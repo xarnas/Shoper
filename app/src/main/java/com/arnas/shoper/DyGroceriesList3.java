@@ -11,6 +11,9 @@ public class DyGroceriesList3 extends AppCompatActivity {
     protected String ListItem;
     protected int HeadId;
     protected int id;
+    protected int lastId;
+
+
 
 
     public int getHeadId(){
