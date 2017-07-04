@@ -489,6 +489,23 @@ protected  void checcBoxFuncionality(final TableLayout Table, final CheckBox che
         Table.addView(checkBox,0);
 
 }
+protected  void shooperList(String shoperMeals){
+    setContentView(R.layout.shoperlist);
+    final TableLayout shoperCart = (TableLayout) findViewById(R.id.shoperCart);
+    String[] meals =shoperMeals.split(";");
+    for (int i= 0; i < meals.length;i++) {
+        ArrayList<DyGroceriesList3> tmplist = save.fullListHead(Integer.parseInt(meals[i]));
+        if (tmplist != null) {
+            for (DyGroceriesList3 object : tmplist) {
+                final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
+                checkBoxNew.setId(object.getId());
+                checkBoxNew.setText(object.getName() + " " + object.getUnit() + " " + object.getListItem());
+                checcBoxFuncionality(shoperCart, checkBoxNew, 0);
+            }
+        }
+    }
+
+}
 
 protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
 
@@ -598,7 +615,6 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
 
             }
             editMode=false;
-            xcount=0;
         }
     });
 
@@ -784,16 +800,20 @@ protected void newList(){
     }
 
 public void generateShopingList(){
-
+    String myShopCart="";
     TableLayout layout = (TableLayout) findViewById(R.id.myMainList);
     for (int i = 0; i < layout.getChildCount(); i++) {
         View child = layout.getChildAt(i);
         if (child instanceof CheckBox) {
             CheckBox cb = (CheckBox)child;
-            Toast.makeText(getBaseContext(),   cb.getText().toString()+" "+cb.isChecked(), Toast.LENGTH_SHORT).show();
+            if (cb.isChecked()){
+                myShopCart+=cb.getId()+";";
+            }
+            //Toast.makeText(getBaseContext(),   cb.getText().toString()+" "+cb.isChecked(), Toast.LENGTH_SHORT).show();
 
         }
     }
+    shooperList(myShopCart);
 };
 
     @Override
