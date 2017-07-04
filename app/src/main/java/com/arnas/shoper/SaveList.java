@@ -2,6 +2,7 @@ package com.arnas.shoper;
 
 import android.content.Context;
 
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ public class SaveList {
     List<DyGroceriesList3> list = new ArrayList<DyGroceriesList3>();
     List<DyMealsList3> list2 = new ArrayList<DyMealsList3>();
     List<CategoryList> cList = new ArrayList<CategoryList>();
-
+     public int lastID;
 
     public void setCatid(int catid) {
         this.catid = catid;
@@ -27,7 +28,7 @@ public class SaveList {
     public int catid=0;
 
 SaveList(){
-
+    setLastID(0);
     String[] myCat = {"Pieno gaminiai ir kiaušiniai",
                         "Mėsa",
                         "Žuvis",
@@ -98,12 +99,20 @@ public void UpdateCatItem(int id, CategoryList newName ){
         return list;
     }
 
+
+    public void removeItem(int id,int openHeadid){
+
+        int possition = getAdapterItemPosition(id);
+        DyGroceriesList3 dg3 = singleItem(possition, openHeadid);
+
+        list.remove(dg3);
+    }
     public void removeItem(int id){
 
         int possition = getAdapterItemPosition(id);
-        DyGroceriesList3 dg3 = singleItem(possition);
+        DyMealsList3 dm3 = singleItem(possition);
 
-        list.remove(dg3);
+        list2.remove(dm3);
     }
 
     public void removeItemCat(int id){
@@ -118,9 +127,25 @@ public void UpdateCatItem(int id, CategoryList newName ){
 
     }
 
-    public DyGroceriesList3 singleItem(int id){
+    public DyGroceriesList3 singleItem(int id,int openHeadId){
 
-        return list.get(id);
+        for (DyGroceriesList3 item : list) {
+            if (item.getId() == id && item.HeadId == openHeadId) {
+                return item;
+            }
+        }
+        return null;
+
+    }
+
+    public DyMealsList3 singleItem(int id){
+
+        for (DyMealsList3 item : list2) {
+            if (item.getId() == id) {
+                return item;
+            }
+        }
+        return null;
 
     }
 
@@ -151,5 +176,25 @@ public void UpdateCatItem(int id, CategoryList newName ){
 
         return cList;
     }
+
+    public int GroceriesLastId(int headId){
+        int currentIdValue=0;
+        for (DyGroceriesList3 object: list){
+             if (object.HeadId == headId){
+                 if (object.id > currentIdValue){
+                      currentIdValue =object.id;
+                 }
+             }
+        }
+        return currentIdValue;
+    }
+    public void setLastID(int lastID) {
+        this.lastID = lastID;
+    }
+
+    public int getLastID() {
+        return lastID;
+    }
+
 
 }

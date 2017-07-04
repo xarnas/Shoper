@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     FileReadWrite frw = new FileReadWrite();
     String checkBoxValue;
     int xcount=0;
-    int headid =0;
+    int openHeadId =0;
     boolean editMode=false;
 
     private int getIndex(Spinner spinner, String myString)
@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
                     save.addListDML3(DML3);
                     String tmpsumname=Course+":"+String.valueOf(headid)+";";
                     FileWrite("MainMenu",tmpsumname);
+                    save.setLastID(headid);
 
                     ///checcBoxFuncionality(Table,checkBoxNew,1);
 
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
-    public void addItemsOnSpinner(final CheckBox checkBox, final TableLayout Table) {
+    public void addItemsOnSpinner(final CheckBox checkBox, final TableLayout Table, final int MainHeadId) {
 
         LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
 
@@ -156,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
 
        // if (!checkBox.getText().toString().isEmpty()) {
         if (checkBox != null){
-            DyGroceriesList3 dgl3=save.singleItem(checkBox.getId());
+            DyGroceriesList3 dgl3=save.singleItem(checkBox.getId(),openHeadId);
             inputName.setText(dgl3.getName().toString());
             inputUnit.setText(dgl3.getUnit().toString());
 
@@ -178,15 +179,26 @@ public class MainActivity extends AppCompatActivity {
 
                 if (checkBox == null) {
                     final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
-                    checkBoxNew.setId(xcount);
-                    DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(),inputName.getText().toString(),inputUnit.getText().toString(),spinner1.getSelectedItem().toString(),headid);
-                    FileWrite("Groceries",inputName.getText().toString()+":"+inputUnit.getText().toString()+":"+spinner1.getSelectedItem().toString()+":"+String.valueOf(xcount) + ":"+ String.valueOf(headid)+";");
-                    save.addList(dg3);
-                    xcount+=1;
+
+                    if (editMode == true){
+                        int groceriesCount= save.GroceriesLastId(openHeadId)+1;
+                        checkBoxNew.setId(groceriesCount);
+                        DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(),inputName.getText().toString(),inputUnit.getText().toString(),spinner1.getSelectedItem().toString(),openHeadId);
+                        FileWrite("Groceries",inputName.getText().toString()+":"+inputUnit.getText().toString()+":"+spinner1.getSelectedItem().toString()+":"+String.valueOf(groceriesCount) + ":"+ String.valueOf(openHeadId)+";");
+                        save.addList(dg3);
+                    }else{
+                        int groceriesCount= save.GroceriesLastId(MainHeadId+1)+1;
+                        checkBoxNew.setId(groceriesCount);
+                        DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(),inputName.getText().toString(),inputUnit.getText().toString(),spinner1.getSelectedItem().toString(),MainHeadId+1);
+                        FileWrite("Groceries",inputName.getText().toString()+":"+inputUnit.getText().toString()+":"+spinner1.getSelectedItem().toString()+":"+String.valueOf(groceriesCount) + ":"+ String.valueOf(MainHeadId+1)+";");
+                        save.addList(dg3);
+                    }
+
+
                     checkBoxNew.setText(checkBoxValue);
                     checcBoxFuncionality(Table,checkBoxNew,0);
                 } else {
-                        DyGroceriesList3 dg3 =  save.singleItem(checkBox.getId());
+                        DyGroceriesList3 dg3 =  save.singleItem(checkBox.getId(),openHeadId);
                         dg3.setName(inputName.getText().toString());
                         dg3.setUnit(inputUnit.getText().toString());
                         dg3.setListItem(spinner1.getSelectedItem().toString());
@@ -198,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
                     for (String t : tokens) {
                         String[] tokens2 = t.split(":");
                         if (!tokens2[0].contains("\n") && !tokens2.toString().isEmpty()) {
-                            if (tokens2[3].equals(String.valueOf(checkBox.getId()))) {
+                            if (tokens2[3].equals(String.valueOf(checkBox.getId())) && tokens2[4].equals(String.valueOf(openHeadId))) {
                                 if (!tokens2[0].equals(inputName.getText().toString())
                                         || !tokens2[1].equals(inputName.getText().toString())
                                         || !tokens[2].equals(inputName.getText().toString())) {
@@ -206,10 +218,15 @@ public class MainActivity extends AppCompatActivity {
                                     tmpfilestr += tmpfilestr2;
                                     reWrite = true;
                                 } else {
-                                    tmpfilestr += t.toString();
+                                    tmpfilestr += t.toString()+";";
                                 }
+                            }else{
+                               tmpfilestr += t.toString()+";";
                             }
                         }
+
+
+
                     if (reWrite== true){
                         ClearFile("Groceries");
                         FileWrite("Groceries",tmpfilestr);
@@ -417,10 +434,11 @@ protected  void checcBoxFuncionality(final TableLayout Table, final CheckBox che
                             @Override
                             public void onClick(View v) {
                                if (indicator == 0) {
-                                    addItemsOnSpinner(checkBox, Table);
+                                    addItemsOnSpinner(checkBox, Table,checkBox.getId());
                                 }else{
                                    editMode = true;
                                    ArrayList<DyGroceriesList3> tmplist = save.fullListHead(checkBox.getId());
+                                   openHeadId=checkBox.getId();
                                    checkBoxList(checkBox.getText().toString(),tmplist);
                                 }
 
@@ -435,7 +453,11 @@ protected  void checcBoxFuncionality(final TableLayout Table, final CheckBox che
                                         "Ištrinta prekė "+ checkBox.getText().toString(), Toast.LENGTH_LONG)
                                         .show();
                                 int a = checkBox.getId();
-                                save.removeItem(checkBox.getId());
+                                if (editMode) {
+                                    save.removeItem(checkBox.getId(), openHeadId);
+                                } else {
+                                    save.removeItem(checkBox.getId());
+                                }
                                 Table.removeViewAt(nIndex);
                                 Table.removeView(findViewById(100 + nIndex));
                             }
@@ -484,7 +506,7 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
             checkBoxNew.setId(object.getId());
             checkBoxNew.setText(object.getName()+" "+object.getUnit()+" "+object.getListItem());
             checcBoxFuncionality(Table,checkBoxNew,0);
-            xcount+=1;
+
         }
     }
     addCheckBox.setOnClickListener(new View.OnClickListener() {
@@ -492,7 +514,7 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
         @Override
         public void onClick(View v) {
 
-            addItemsOnSpinner(null,Table);
+            addItemsOnSpinner(null,Table,save.getLastID());
 
         }
     });
@@ -587,9 +609,10 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
             setContentView(R.layout.activity_main);
 
             final TableLayout TableMain = (TableLayout) findViewById(R.id.myMainList);
+
             if (editMode == false) {
-            mainListItem(null,TableMain,titleView.getText().toString(),headid);
-            headid+=1;
+            mainListItem(null,TableMain,titleView.getText().toString(),save.getLastID()+1);
+           //save.setLastID(save.getLastID()+1);
             }
 
             Button btnnewList = (Button) findViewById(R.id.newList);
@@ -729,16 +752,19 @@ protected void newList(){
         String fullList = FileRead(file);
         String[] tokens = fullList.split(";");
         // ClearFile("MainMenu");
+        int headIdmain =0;
         for (String t : tokens) {
+
             String[] tokens2 = t.split(":");
             if (!tokens2[0].isEmpty() && !tokens2[0].contains("\n"))  {
                 final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
-                checkBoxNew.setId(Integer.parseInt(tokens2[1]));
+                headIdmain=Integer.parseInt(tokens2[1]);
+                checkBoxNew.setId(headIdmain);
                 checkBoxNew.setText(tokens2[0]);
-                DyMealsList3 DML3 = new DyMealsList3(Integer.parseInt(tokens2[1]), tokens2[0]);
+                DyMealsList3 DML3 = new DyMealsList3(headIdmain, tokens2[0]);
                 save.addListDML3(DML3);
                 checcBoxFuncionality(Table, checkBoxNew, 1);
-                headid+=1;
+                save.setLastID(headIdmain);
             }
             }
 
@@ -757,7 +783,18 @@ protected void newList(){
 
     }
 
+public void generateShopingList(){
 
+    TableLayout layout = (TableLayout) findViewById(R.id.myMainList);
+    for (int i = 0; i < layout.getChildCount(); i++) {
+        View child = layout.getChildAt(i);
+        if (child instanceof CheckBox) {
+            CheckBox cb = (CheckBox)child;
+            Toast.makeText(getBaseContext(),   cb.getText().toString()+" "+cb.isChecked(), Toast.LENGTH_SHORT).show();
+
+        }
+    }
+};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -790,7 +827,17 @@ protected void newList(){
 
         Button btnnewList = (Button) findViewById(R.id.newList);
         Button btnnewCategory = (Button) findViewById(R.id.newCategory);
+        Button btngenerList = (Button) findViewById(R.id.generList);
 
+
+
+        btngenerList.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                generateShopingList();
+
+            }
+        });
         btnnewList.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -870,11 +917,6 @@ protected void newList(){
                         });
                     }
                 });
-
-
-
-
-
 
 
             }

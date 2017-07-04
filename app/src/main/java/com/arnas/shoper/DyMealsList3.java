@@ -13,15 +13,6 @@ public class DyMealsList3 extends AppCompatActivity {
 
         protected String Name;
         protected int id;
-        protected int lastID;
-
-    public void setLastID(int lastID) {
-        this.lastID = lastID;
-    }
-
-    public int getLastID() {
-        return lastID;
-    }
 
 
         public int getId() {
