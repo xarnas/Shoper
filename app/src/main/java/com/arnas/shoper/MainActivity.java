@@ -3,6 +3,7 @@ package com.arnas.shoper;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -26,10 +27,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.ScrollView;
+import android.widget.SimpleExpandableListAdapter;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -45,69 +49,79 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.RunnableFuture;
+import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.ExpandableListView.OnGroupClickListener;
+import android.widget.ExpandableListView.OnGroupCollapseListener;
+import android.widget.ExpandableListView.OnGroupExpandListener;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    ListView listView ;
-    String[] values= new String[1];
+    ListView listView;
+    String[] values = new String[1];
     SaveList save = new SaveList();
     FileReadWrite frw = new FileReadWrite();
     String checkBoxValue;
-    int xcount=0;
-    int openHeadId =0;
-    boolean editMode=false;
+    int xcount = 0;
+    int openHeadId = 0;
+    boolean editMode = false;
 
-    private int getIndex(Spinner spinner, String myString)
-    {
+
+
+
+    private int getIndex(Spinner spinner, String myString) {
         int index = 0;
 
-        for (int i=0;i<spinner.getCount();i++){
-            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString)){
+        for (int i = 0; i < spinner.getCount(); i++) {
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString)) {
                 index = i;
                 break;
             }
         }
         return index;
     }
-    public void mainListItem(final CheckBox checkBox, final TableLayout Table, String Course,int headid) {
+
+    public void mainListItem(final CheckBox checkBox, final TableLayout Table, String Course, int headid) {
 
 
-        if (checkBox != null){
+        if (checkBox != null) {
 
 
         }
-                checkBoxValue=Course;
+        checkBoxValue = Course;
 
-                if (checkBox == null) {
-                    //final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
-                    //checkBoxNew.setId(headid);
-                    //DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(),inputName.getText().toString(),inputUnit.getText().toString(),spinner1.getSelectedItem().toString());
-                    //save.addList(dg3);
-                    //xcount+=1;
-                    //checkBoxNew.setText(checkBoxValue);
-                    DyMealsList3 DML3 = new DyMealsList3(headid,Course);
-                    save.addListDML3(DML3);
-                    String tmpsumname=Course+":"+String.valueOf(headid)+";";
-                    FileWrite("MainMenu",tmpsumname);
-                    save.setLastID(headid);
+        if (checkBox == null) {
+            //final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
+            //checkBoxNew.setId(headid);
+            //DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(),inputName.getText().toString(),inputUnit.getText().toString(),spinner1.getSelectedItem().toString());
+            //save.addList(dg3);
+            //xcount+=1;
+            //checkBoxNew.setText(checkBoxValue);
+            DyMealsList3 DML3 = new DyMealsList3(headid, Course);
+            save.addListDML3(DML3);
+            String tmpsumname = Course + ":" + String.valueOf(headid) + ";";
+            FileWrite("MainMenu", tmpsumname);
+            save.setLastID(headid);
 
-                    ///checcBoxFuncionality(Table,checkBoxNew,1);
+            ///checcBoxFuncionality(Table,checkBoxNew,1);
 
 
-                } else {
+        } else {
                    /* DyGroceriesList3 dg3 =  save.singleItem(checkBox.getId());
                     dg3.setName(inputName.getText().toString());
                     dg3.setUnit(inputUnit.getText().toString());
                     dg3.setListItem(spinner1.getSelectedItem().toString());
                     checkBox.setText(checkBoxValue);*/
 
-                }
+        }
 
 
-            }
+    }
 
 
     public void addItemsOnSpinner(final CheckBox checkBox, final TableLayout Table, final int MainHeadId) {
@@ -118,19 +132,14 @@ public class MainActivity extends AppCompatActivity {
         final PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
 
 
-
-
         final Spinner spinner1 = (Spinner) popupWindow.getContentView().findViewById(R.id.spinner1);
 
         List<String> list = new ArrayList<String>();
         final List<CategoryList> tmpCatlist = save.fullListCATG();
 
-        for (CategoryList object:tmpCatlist){
-           list.add(object.getName().toString());
+        for (CategoryList object : tmpCatlist) {
+            list.add(object.getName().toString());
         }
-
-
-
 
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, list);
@@ -150,14 +159,14 @@ public class MainActivity extends AppCompatActivity {
 
         Button btnAcppect = (Button) popupView.findViewById(R.id.saveitem);
         Button btnDismiss = (Button) popupView.findViewById(R.id.dismiss);
-        final EditText inputName = (EditText)popupView.findViewById(R.id.itemName);
-        final EditText inputUnit = (EditText)popupView.findViewById(R.id.itemUnit);
+        final EditText inputName = (EditText) popupView.findViewById(R.id.itemName);
+        final EditText inputUnit = (EditText) popupView.findViewById(R.id.itemUnit);
 
         spinner1.setSelection(2);
 
-       // if (!checkBox.getText().toString().isEmpty()) {
-        if (checkBox != null){
-            DyGroceriesList3 dgl3=save.singleItem(checkBox.getId(),openHeadId);
+        // if (!checkBox.getText().toString().isEmpty()) {
+        if (checkBox != null) {
+            DyGroceriesList3 dgl3 = save.singleItem(checkBox.getId(), openHeadId);
             inputName.setText(dgl3.getName().toString());
             inputUnit.setText(dgl3.getUnit().toString());
 
@@ -165,48 +174,48 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        btnAcppect.setOnClickListener(new Button.OnClickListener(){
+        btnAcppect.setOnClickListener(new Button.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
 
-                if (inputName.getText().toString().isEmpty() || inputUnit.getText().toString().isEmpty()){
+                if (inputName.getText().toString().isEmpty() || inputUnit.getText().toString().isEmpty()) {
                     Toast.makeText(getApplicationContext(),
                             "Užpildykite visus laukus", Toast.LENGTH_LONG)
                             .show();
                     return;
                 }
-                checkBoxValue=inputName.getText().toString()+" "+inputUnit.getText().toString()+" "+spinner1.getSelectedItem().toString();
+                checkBoxValue = inputName.getText().toString() + " " + inputUnit.getText().toString() + " " + spinner1.getSelectedItem().toString();
 
                 if (checkBox == null) {
                     final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
 
-                    if (editMode == true){
-                        int groceriesCount= save.GroceriesLastId(openHeadId)+1;
+                    if (editMode == true) {
+                        int groceriesCount = save.GroceriesLastId(openHeadId) + 1;
                         checkBoxNew.setId(groceriesCount);
-                        DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(),inputName.getText().toString(),inputUnit.getText().toString(),spinner1.getSelectedItem().toString(),openHeadId);
-                        FileWrite("Groceries",inputName.getText().toString()+":"+inputUnit.getText().toString()+":"+spinner1.getSelectedItem().toString()+":"+String.valueOf(groceriesCount) + ":"+ String.valueOf(openHeadId)+";");
+                        DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(), inputName.getText().toString(), inputUnit.getText().toString(), spinner1.getSelectedItem().toString(), openHeadId);
+                        FileWrite("Groceries", inputName.getText().toString() + ":" + inputUnit.getText().toString() + ":" + spinner1.getSelectedItem().toString() + ":" + String.valueOf(groceriesCount) + ":" + String.valueOf(openHeadId) + ";");
                         save.addList(dg3);
-                    }else{
-                        int groceriesCount= save.GroceriesLastId(MainHeadId+1)+1;
+                    } else {
+                        int groceriesCount = save.GroceriesLastId(MainHeadId + 1) + 1;
                         checkBoxNew.setId(groceriesCount);
-                        DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(),inputName.getText().toString(),inputUnit.getText().toString(),spinner1.getSelectedItem().toString(),MainHeadId+1);
-                        FileWrite("Groceries",inputName.getText().toString()+":"+inputUnit.getText().toString()+":"+spinner1.getSelectedItem().toString()+":"+String.valueOf(groceriesCount) + ":"+ String.valueOf(MainHeadId+1)+";");
+                        DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(), inputName.getText().toString(), inputUnit.getText().toString(), spinner1.getSelectedItem().toString(), MainHeadId + 1);
+                        FileWrite("Groceries", inputName.getText().toString() + ":" + inputUnit.getText().toString() + ":" + spinner1.getSelectedItem().toString() + ":" + String.valueOf(groceriesCount) + ":" + String.valueOf(MainHeadId + 1) + ";");
                         save.addList(dg3);
                     }
 
 
                     checkBoxNew.setText(checkBoxValue);
-                    checcBoxFuncionality(Table,checkBoxNew,0);
+                    checcBoxFuncionality(Table, checkBoxNew, 0);
                 } else {
-                        DyGroceriesList3 dg3 =  save.singleItem(checkBox.getId(),openHeadId);
-                        dg3.setName(inputName.getText().toString());
-                        dg3.setUnit(inputUnit.getText().toString());
-                        dg3.setListItem(spinner1.getSelectedItem().toString());
-                        checkBox.setText(checkBoxValue);
-                        String[] tokens = FileRead("Groceries").split(";");
-                    String tmpfilestr="";
-                    String tmpfilestr2="";
-                    boolean reWrite=false;
+                    DyGroceriesList3 dg3 = save.singleItem(checkBox.getId(), openHeadId);
+                    dg3.setName(inputName.getText().toString());
+                    dg3.setUnit(inputUnit.getText().toString());
+                    dg3.setListItem(spinner1.getSelectedItem().toString());
+                    checkBox.setText(checkBoxValue);
+                    String[] tokens = FileRead("Groceries").split(";");
+                    String tmpfilestr = "";
+                    String tmpfilestr2 = "";
+                    boolean reWrite = false;
                     for (String t : tokens) {
                         String[] tokens2 = t.split(":");
                         if (!tokens2[0].contains("\n") && !tokens2.toString().isEmpty()) {
@@ -218,26 +227,23 @@ public class MainActivity extends AppCompatActivity {
                                     tmpfilestr += tmpfilestr2;
                                     reWrite = true;
                                 } else {
-                                    tmpfilestr += t.toString()+";";
+                                    tmpfilestr += t.toString() + ";";
                                 }
-                            }else{
-                               tmpfilestr += t.toString()+";";
+                            } else {
+                                tmpfilestr += t.toString() + ";";
                             }
                         }
 
 
+                        if (reWrite == true) {
+                            ClearFile("Groceries");
+                            FileWrite("Groceries", tmpfilestr);
+                        }
 
-                    if (reWrite== true){
-                        ClearFile("Groceries");
-                        FileWrite("Groceries",tmpfilestr);
+
                     }
 
-
-
                 }
-
-                }
-
 
 
                 popupWindow.dismiss();
@@ -259,21 +265,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    protected  void TxtViewFuncionality(final TableLayout Table, final TextView TxtView, final int indicator){
+    protected void TxtViewFuncionality(final TableLayout Table, final TextView TxtView, final int indicator) {
 
 
-        TxtView.setOnClickListener(new View.OnClickListener(){
+        TxtView.setOnClickListener(new View.OnClickListener() {
             boolean lock = false;
+
             @Override
             public void onClick(View v) {
                 for (int i = 0; i < 1; i++) {
                     //if (!TxtView.isClickable()) {
-                      //  final int nIndex = Table.indexOfChild(TxtView);
-                      //  Table.removeView(findViewById(100 + nIndex));
+                    //  final int nIndex = Table.indexOfChild(TxtView);
+                    //  Table.removeView(findViewById(100 + nIndex));
 
                     //} else {
                     if (!lock) {
-                        lock =true;
+                        lock = true;
                         final int nIndex = Table.indexOfChild(TxtView);
                         TableRow row = new TableRow(getApplicationContext());
 
@@ -315,24 +322,24 @@ public class MainActivity extends AppCompatActivity {
                                 final PopupWindow popupWindowCat = new PopupWindow(popupViewCat, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
                                 Button btnAcppect = (Button) popupViewCat.findViewById(R.id.saveitem);
                                 Button btnDismiss = (Button) popupViewCat.findViewById(R.id.dismiss);
-                                final EditText inputName = (EditText)popupViewCat.findViewById(R.id.itemName);
+                                final EditText inputName = (EditText) popupViewCat.findViewById(R.id.itemName);
                                 inputName.setText(TxtView.getText().toString());
-                                btnDismiss.setOnClickListener(new View.OnClickListener(){
+                                btnDismiss.setOnClickListener(new View.OnClickListener() {
                                     @Override
-                                    public void onClick(View V){
+                                    public void onClick(View V) {
                                         popupWindowCat.dismiss();
                                     }
                                 });
-                                btnAcppect.setOnClickListener(new View.OnClickListener(){
+                                btnAcppect.setOnClickListener(new View.OnClickListener() {
                                     @Override
-                                    public void onClick(View V){
-                                        for (CategoryList object:save.fullListCATG()){
-                                           if (object.getName().equals(TxtView.getText().toString())){
-                                               object.setName(inputName.getText().toString());
-                                               save.UpdateCatItem(object.getId()-1,object);
-                                               TxtView.setText(inputName.getText().toString());
-                                               popupWindowCat.dismiss();
-                                           }
+                                    public void onClick(View V) {
+                                        for (CategoryList object : save.fullListCATG()) {
+                                            if (object.getName().equals(TxtView.getText().toString())) {
+                                                object.setName(inputName.getText().toString());
+                                                save.UpdateCatItem(object.getId() - 1, object);
+                                                TxtView.setText(inputName.getText().toString());
+                                                popupWindowCat.dismiss();
+                                            }
                                         }
 
                                     }
@@ -340,7 +347,6 @@ public class MainActivity extends AppCompatActivity {
 
 
                                 popupWindowCat.showAtLocation(popupViewCat, Gravity.CENTER, 0, 0);
-
 
 
                             }
@@ -351,7 +357,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 Toast.makeText(getApplicationContext(),
-                                        "Ištrinta kategorija "+ TxtView.getText().toString(), Toast.LENGTH_LONG)
+                                        "Ištrinta kategorija " + TxtView.getText().toString(), Toast.LENGTH_LONG)
                                         .show();
                                 int a = TxtView.getId();
                                 save.removeItemCat(TxtView.getId());
@@ -384,11 +390,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Table.addView(TxtView,0);
+        Table.addView(TxtView, 0);
 
     }
-protected  void checcBoxFuncionality(final TableLayout Table, final CheckBox checkBox, final int indicator){
-        checkBox.setOnClickListener(new View.OnClickListener(){
+
+    protected void checcBoxFuncionality(final TableLayout Table, final CheckBox checkBox, final int indicator) {
+        checkBox.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -433,13 +440,13 @@ protected  void checcBoxFuncionality(final TableLayout Table, final CheckBox che
                         text1.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                               if (indicator == 0) {
-                                    addItemsOnSpinner(checkBox, Table,checkBox.getId());
-                                }else{
-                                   editMode = true;
-                                   ArrayList<DyGroceriesList3> tmplist = save.fullListHead(checkBox.getId());
-                                   openHeadId=checkBox.getId();
-                                   checkBoxList(checkBox.getText().toString(),tmplist);
+                                if (indicator == 0) {
+                                    addItemsOnSpinner(checkBox, Table, checkBox.getId());
+                                } else {
+                                    editMode = true;
+                                    ArrayList<DyGroceriesList3> tmplist = save.fullListHead(checkBox.getId());
+                                    openHeadId = checkBox.getId();
+                                    checkBoxList(checkBox.getText().toString(), tmplist);
                                 }
 
                             }
@@ -450,7 +457,7 @@ protected  void checcBoxFuncionality(final TableLayout Table, final CheckBox che
                             @Override
                             public void onClick(View v) {
                                 Toast.makeText(getApplicationContext(),
-                                        "Ištrinta prekė "+ checkBox.getText().toString(), Toast.LENGTH_LONG)
+                                        "Ištrinta prekė " + checkBox.getText().toString(), Toast.LENGTH_LONG)
                                         .show();
                                 int a = checkBox.getId();
                                 if (editMode) {
@@ -486,25 +493,170 @@ protected  void checcBoxFuncionality(final TableLayout Table, final CheckBox che
             }
         });
 
-        Table.addView(checkBox,0);
+        Table.addView(checkBox, 0);
 
-}
-protected  void shooperList(String shoperMeals){
-    setContentView(R.layout.shoperlist);
-    final TableLayout shoperCart = (TableLayout) findViewById(R.id.shoperCart);
-    String[] meals =shoperMeals.split(";");
-    for (int i= 0; i < meals.length;i++) {
-        ArrayList<DyGroceriesList3> tmplist = save.fullListHead(Integer.parseInt(meals[i]));
-        if (tmplist != null) {
-            for (DyGroceriesList3 object : tmplist) {
-                final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
-                checkBoxNew.setId(object.getId());
-                checkBoxNew.setText(object.getName() + " " + object.getUnit() + " " + object.getListItem());
-                checcBoxFuncionality(shoperCart, checkBoxNew, 0);
-            }
-        }
     }
 
+    ExpandableListView expandableListView;
+    ExpandableListAdapter expandableListAdapter;
+    List<String> expandableListTitle;
+    HashMap<String, List<String>> expandableListDetail;
+
+    protected void shooperList(String shoperMeals) {
+
+        setContentView(R.layout.shoperlist);
+
+
+
+        expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
+        expandableListDetail = ExpandableListDataPump.getData(shoperMeals,save);
+        expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
+        expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableListDetail);
+        expandableListView.setAdapter(expandableListAdapter);
+        expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+
+            @Override
+            public void onGroupExpand(int groupPosition) {
+                Toast.makeText(getApplicationContext(),
+                        expandableListTitle.get(groupPosition) + " List Expanded.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+
+            @Override
+            public void onGroupCollapse(int groupPosition) {
+                Toast.makeText(getApplicationContext(),
+                        expandableListTitle.get(groupPosition) + " List Collapsed.",
+                        Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v,
+                                        int groupPosition, int childPosition, long id) {
+                Toast.makeText(
+                        getApplicationContext(),
+                        expandableListTitle.get(groupPosition)
+                                + " -> "
+                                + expandableListDetail.get(
+                                expandableListTitle.get(groupPosition)).get(
+                                childPosition), Toast.LENGTH_SHORT
+                ).show();
+                return false;
+            }
+        });
+
+
+       // final TableLayout shoperCart = (TableLayout) findViewById(R.id.shoperCart);
+        Button backToMainMenu = (Button) findViewById(R.id.backToMainMenu);
+        Button saveMyItems = (Button) findViewById(R.id.saveMyItems);
+       /* String[] meals = shoperMeals.split(";");
+        for (int i = 0; i < meals.length; i++) {
+            ArrayList<DyGroceriesList3> tmplist = save.fullListHead(Integer.parseInt(meals[i]));
+            if (tmplist != null) {
+                for (DyGroceriesList3 object : tmplist) {
+                    final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
+                    checkBoxNew.setId(object.getId());
+                    checkBoxNew.setText(object.getName() + " " + object.getUnit() + " " + object.getListItem());
+                    //checcBoxFuncionality(shoperCart, checkBoxNew, 0);
+                }
+            }
+        }*/
+
+
+
+
+    backToMainMenu.setOnClickListener(new View.OnClickListener(){
+        @Override
+        public void onClick(View v){
+
+            setContentView(R.layout.activity_main);
+
+            final TableLayout TableMain = (TableLayout) findViewById(R.id.myMainList);
+            Button btnnewList = (Button) findViewById(R.id.newList);
+            Button btnnewCategory = (Button) findViewById(R.id.newCategory);
+            Button btnnewGenerList = (Button) findViewById(R.id.generList);
+            btnnewList.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    newList();
+                }
+            });
+            btnnewGenerList.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    //generateShopingList();
+                }
+            });
+            btnnewCategory.setOnClickListener(new View.OnClickListener(){
+
+                @Override
+                public void onClick(View v) {
+                    xcount=0;
+                    setContentView(R.layout.categorylistm);
+                    save.fullListCATG();
+
+                    Button catbntNewItem = (Button) findViewById(R.id.newCategoryItem);
+                    Button catbntBack = (Button) findViewById(R.id.backToMainMenu2);
+
+                    catbntNewItem.setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View V){
+
+                            Toast.makeText(getApplicationContext(),
+                                    "testtt ", Toast.LENGTH_LONG)
+                                    .show();
+
+
+                            LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                            final View popupViewCat = layoutInflater.inflate(R.layout.category, null);
+                            final PopupWindow popupWindowCat = new PopupWindow(popupViewCat, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+                            popupWindowCat.showAtLocation(popupViewCat, Gravity.CENTER, 0, 0);
+
+
+                        }
+                    });
+
+
+                    catbntBack.setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View V){
+                            xcount=0;
+                            setContentView(R.layout.activity_main);
+                            final TableLayout TableMain = (TableLayout) findViewById(R.id.myMainList);
+                            Button btnnewList = (Button) findViewById(R.id.newList);
+                            Button btnnewCategory = (Button) findViewById(R.id.newCategory);
+
+                            btnnewList.setOnClickListener(new View.OnClickListener(){
+                                @Override
+                                public void onClick(View v) {
+                                    newList();
+                                }
+                            });
+                        }
+                    });
+
+                }
+            });
+
+
+
+            final List<DyMealsList3> tmpheadlist = save.fullListDML3();
+
+            for (DyMealsList3 object:tmpheadlist){
+                final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
+                checkBoxNew.setId(object.getId());
+                checkBoxNew.setText(object.getName());
+                checcBoxFuncionality(TableMain,checkBoxNew,1);
+
+            }
+            editMode=false;
+        }
+    });
 }
 
 protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
@@ -814,33 +966,12 @@ public void generateShopingList(){
         }
     }
     shooperList(myShopCart);
-};
+
+}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-      /*  setContentView(R.layout.fileread);
-        Button btnfileWrite = (Button) findViewById(R.id.filewrite);
-        Button btnfileRead = (Button) findViewById(R.id.fileread);
-        final TextView fileoutput = (TextView) findViewById(R.id.filewriteread);
-
-        btnfileWrite.setOnClickListener(new Button.OnClickListener(){
-            @Override
-            public void onClick(View v){
-
-                 //FileWrite("MainMenu");
-
-                ClearFile("MainMenu");
-            }
-        });
-        btnfileRead.setOnClickListener(new Button.OnClickListener(){
-            @Override
-            public void onClick(View v){
-               fileoutput.setText(FileRead("MainMenu"));
-            }
-        });*/
 
         setContentView(R.layout.activity_main);
         LoadFullListFromFile("MainMenu");
