@@ -5,7 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.PaintDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -497,6 +500,47 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public int getColor(View v){
+        int color =0;
+        if (v.getBackground() != null) {
+            color = ((ColorDrawable) v.getBackground()).getColor();
+        }
+        return color;
+    }
+
+public void colorChanger(ExpandableListView parent, View v,
+                         int groupPosition, int childPosition, long id){
+    if (getColor(v) == Color.GREEN){
+        ShopProgress sp = save.changeShopProgress(groupPosition,false);
+        v.setBackgroundColor (Color.TRANSPARENT);
+        //parent.getChildAt(groupPosition).setBackgroundColor(Color.DKGRAY);
+        Toast.makeText(getApplicationContext(),
+                sp.getChildSelected()+" of "+parent.getExpandableListAdapter().getChildrenCount(groupPosition), Toast.LENGTH_LONG)
+                .show();
+    }else {
+        if(save.addRemoveShopProgress(groupPosition)){
+            ShopProgress sp = save.changeShopProgress(groupPosition,true);
+            Toast.makeText(getApplicationContext(),
+                    sp.getChildSelected()+" of "+parent.getExpandableListAdapter().getChildrenCount(groupPosition), Toast.LENGTH_LONG)
+                    .show();
+
+            if (sp.getChildSelected() == parent.getExpandableListAdapter().getChildrenCount(groupPosition)){
+                //parent.getChildAt(groupPosition).setBackgroundColor(Color.RED);
+
+            }
+        }else{
+            ShopProgress sp = save.changeShopProgress(groupPosition,true);
+            if (sp.getChildSelected() == parent.getExpandableListAdapter().getChildrenCount(groupPosition)){
+                //parent.getChildAt(groupPosition).setBackgroundColor(Color.YELLOW);
+
+            }
+            Toast.makeText(getApplicationContext(),
+                    sp.getChildSelected()+" of "+parent.getExpandableListAdapter().getChildrenCount(groupPosition), Toast.LENGTH_LONG)
+                    .show();
+        }
+        v.setBackgroundColor(Color.GREEN);
+    }
+}
     ExpandableListView expandableListView;
     ExpandableListAdapter expandableListAdapter;
     List<String> expandableListTitle;
@@ -512,60 +556,21 @@ public class MainActivity extends AppCompatActivity {
         expandableListDetail = ExpandableListDataPump.getData(shoperMeals,save);
         expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
         expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableListDetail);
+
         expandableListView.setAdapter(expandableListAdapter);
-        expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
 
-            @Override
-            public void onGroupExpand(int groupPosition) {
-                Toast.makeText(getApplicationContext(),
-                        expandableListTitle.get(groupPosition) + " List Expanded.",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
-
-            @Override
-            public void onGroupCollapse(int groupPosition) {
-                Toast.makeText(getApplicationContext(),
-                        expandableListTitle.get(groupPosition) + " List Collapsed.",
-                        Toast.LENGTH_SHORT).show();
-
-            }
-        });
 
         expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
-                Toast.makeText(
-                        getApplicationContext(),
-                        expandableListTitle.get(groupPosition)
-                                + " -> "
-                                + expandableListDetail.get(
-                                expandableListTitle.get(groupPosition)).get(
-                                childPosition), Toast.LENGTH_SHORT
-                ).show();
+                colorChanger(parent,v,groupPosition,childPosition,id);
+
                 return false;
             }
         });
 
-
-       // final TableLayout shoperCart = (TableLayout) findViewById(R.id.shoperCart);
         Button backToMainMenu = (Button) findViewById(R.id.backToMainMenu);
-        Button saveMyItems = (Button) findViewById(R.id.saveMyItems);
-       /* String[] meals = shoperMeals.split(";");
-        for (int i = 0; i < meals.length; i++) {
-            ArrayList<DyGroceriesList3> tmplist = save.fullListHead(Integer.parseInt(meals[i]));
-            if (tmplist != null) {
-                for (DyGroceriesList3 object : tmplist) {
-                    final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
-                    checkBoxNew.setId(object.getId());
-                    checkBoxNew.setText(object.getName() + " " + object.getUnit() + " " + object.getListItem());
-                    //checcBoxFuncionality(shoperCart, checkBoxNew, 0);
-                }
-            }
-        }*/
 
 
 
@@ -573,13 +578,25 @@ public class MainActivity extends AppCompatActivity {
     backToMainMenu.setOnClickListener(new View.OnClickListener(){
         @Override
         public void onClick(View v){
-
+             save.clearShopProgressList();
             setContentView(R.layout.activity_main);
 
             final TableLayout TableMain = (TableLayout) findViewById(R.id.myMainList);
             Button btnnewList = (Button) findViewById(R.id.newList);
             Button btnnewCategory = (Button) findViewById(R.id.newCategory);
             Button btnnewGenerList = (Button) findViewById(R.id.generList);
+
+
+
+
+            btnnewGenerList.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    generateShopingList();
+                }
+            });
+
+
             btnnewList.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
@@ -589,7 +606,7 @@ public class MainActivity extends AppCompatActivity {
             btnnewGenerList.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    //generateShopingList();
+                    generateShopingList();
                 }
             });
             btnnewCategory.setOnClickListener(new View.OnClickListener(){
@@ -630,6 +647,30 @@ public class MainActivity extends AppCompatActivity {
                             final TableLayout TableMain = (TableLayout) findViewById(R.id.myMainList);
                             Button btnnewList = (Button) findViewById(R.id.newList);
                             Button btnnewCategory = (Button) findViewById(R.id.newCategory);
+                            Button btnnewGenerList = (Button) findViewById(R.id.generList);
+
+
+
+
+                            btnnewGenerList.setOnClickListener(new View.OnClickListener(){
+                                @Override
+                                public void onClick(View v) {
+                                    generateShopingList();
+                                }
+                            });
+                            btnnewCategory.setOnClickListener(new Button.OnClickListener(){
+                                @Override
+                                public void onClick(View v) {
+                                    setContentView(R.layout.categorylistm);
+                                    final List<CategoryList> tmpCatlist = save.fullListCATG();
+                                    final TableLayout tbname = (TableLayout) findViewById(R.id.cattbl);
+                                    for (CategoryList object:tmpCatlist){
+                                        TextView newCatItem = new TextView(getApplicationContext());
+                                        newCatItem.setText(object.getName().toString());
+                                        tbname.addView(newCatItem,0);
+                                    }
+                                }
+                            });
 
                             btnnewList.setOnClickListener(new View.OnClickListener(){
                                 @Override
@@ -637,6 +678,18 @@ public class MainActivity extends AppCompatActivity {
                                     newList();
                                 }
                             });
+
+                            final List<DyMealsList3> tmpheadlist = save.fullListDML3();
+
+                            for (DyMealsList3 object:tmpheadlist){
+                                final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
+                                checkBoxNew.setId(object.getId());
+                                checkBoxNew.setText(object.getName());
+                                checcBoxFuncionality(TableMain,checkBoxNew,1);
+
+                            }
+                            editMode=false;
+
                         }
                     });
 
@@ -696,6 +749,15 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
             final TableLayout TableMain = (TableLayout) findViewById(R.id.myMainList);
             Button btnnewList = (Button) findViewById(R.id.newList);
             Button btnnewCategory = (Button) findViewById(R.id.newCategory);
+            Button btnnewGener = (Button) findViewById(R.id.generList);
+
+
+            btnnewGener.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    generateShopingList();
+                }
+            });
 
             btnnewList.setOnClickListener(new View.OnClickListener(){
                 @Override
@@ -742,6 +804,29 @@ protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
                             final TableLayout TableMain = (TableLayout) findViewById(R.id.myMainList);
                             Button btnnewList = (Button) findViewById(R.id.newList);
                             Button btnnewCategory = (Button) findViewById(R.id.newCategory);
+                            Button btnnewGenerList = (Button) findViewById(R.id.generList);
+
+
+                            btnnewCategory.setOnClickListener(new Button.OnClickListener(){
+                                @Override
+                                public void onClick(View v) {
+                                    setContentView(R.layout.categorylistm);
+                                    final List<CategoryList> tmpCatlist = save.fullListCATG();
+                                    final TableLayout tbname = (TableLayout) findViewById(R.id.cattbl);
+                                    for (CategoryList object:tmpCatlist){
+                                        TextView newCatItem = new TextView(getApplicationContext());
+                                        newCatItem.setText(object.getName().toString());
+                                        tbname.addView(newCatItem,0);
+                                    }
+                                }
+                            });
+
+                            btnnewGenerList.setOnClickListener(new View.OnClickListener(){
+                                @Override
+                                public void onClick(View v) {
+                                    generateShopingList();
+                                }
+                            });
 
                             btnnewList.setOnClickListener(new View.OnClickListener(){
                                 @Override
@@ -953,6 +1038,7 @@ protected void newList(){
 
 public void generateShopingList(){
     String myShopCart="";
+
     TableLayout layout = (TableLayout) findViewById(R.id.myMainList);
     for (int i = 0; i < layout.getChildCount(); i++) {
         View child = layout.getChildAt(i);
@@ -1059,6 +1145,27 @@ public void generateShopingList(){
                         final TableLayout TableMain = (TableLayout) findViewById(R.id.myMainList);
                         Button btnnewList = (Button) findViewById(R.id.newList);
                         Button btnnewCategory = (Button) findViewById(R.id.newCategory);
+                        Button btnnewGenerList = (Button) findViewById(R.id.generList);
+
+                        btnnewCategory.setOnClickListener(new Button.OnClickListener(){
+                            @Override
+                            public void onClick(View v) {
+                                setContentView(R.layout.categorylistm);
+                                final List<CategoryList> tmpCatlist = save.fullListCATG();
+                                final TableLayout tbname = (TableLayout) findViewById(R.id.cattbl);
+                                for (CategoryList object:tmpCatlist){
+                                    TextView newCatItem = new TextView(getApplicationContext());
+                                    newCatItem.setText(object.getName().toString());
+                                    tbname.addView(newCatItem,0);
+                                }
+                            }
+                        });
+                        btnnewGenerList.setOnClickListener(new View.OnClickListener(){
+                            @Override
+                            public void onClick(View v) {
+                                generateShopingList();
+                            }
+                        });
 
                         btnnewList.setOnClickListener(new View.OnClickListener(){
                             @Override

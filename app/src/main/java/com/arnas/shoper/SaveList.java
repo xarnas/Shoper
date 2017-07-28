@@ -15,6 +15,7 @@ public class SaveList {
     List<DyGroceriesList3> list = new ArrayList<DyGroceriesList3>();
     List<DyMealsList3> list2 = new ArrayList<DyMealsList3>();
     List<CategoryList> cList = new ArrayList<CategoryList>();
+    List<ShopProgress> shopProgressesList = new ArrayList<ShopProgress>();
      public int lastID;
 
     public void setCatid(int catid) {
@@ -52,6 +53,35 @@ SaveList(){
     }
 
 
+
+}
+public boolean addRemoveShopProgress(int groupId){
+    for (ShopProgress object: shopProgressesList) {
+        if (object.getGroupPosition()== groupId){
+            return false;
+        }
+    }
+     ShopProgress sp = new ShopProgress();
+     sp.setGroupPosition(groupId);
+     sp.setChildSelected(0);
+     shopProgressesList.add(sp);
+    return true;
+}
+public void clearShopProgressList(){
+    shopProgressesList.clear();
+}
+public ShopProgress changeShopProgress(int groupId,boolean prog){
+    for (ShopProgress object: shopProgressesList) {
+        if (object.getGroupPosition()==groupId){
+            if (prog) {
+                object.setChildSelected(object.getChildSelected()+1);
+            }else{
+                object.setChildSelected(object.getChildSelected()-1);
+            }
+            return object;
+        }
+    }
+    return null;
 
 }
 public void UpdateCatItem(int id, CategoryList newName ){

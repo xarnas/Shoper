@@ -42,15 +42,6 @@
         android:orientation="horizontal"
         android:weightSum="1">
 
-
-        <Button
-            android:id="@+id/saveMyItems"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="32dp"
-            android:layout_weight="0.20"
-            android:text="išsaugoti" />
-
         <Button
             android:id="@+id/backToMainMenu"
             android:layout_width="wrap_content"
