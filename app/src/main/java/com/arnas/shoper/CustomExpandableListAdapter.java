@@ -1,6 +1,7 @@
 package com.arnas.shoper;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,13 +17,17 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
     private Context context;
     private List<String> expandableListTitle;
     private HashMap<String, List<String>> expandableListDetail;
+    private SaveList save;
+
 
     public CustomExpandableListAdapter(Context context, List<String> expandableListTitle,
-                                       HashMap<String, List<String>> expandableListDetail) {
+                                       HashMap<String, List<String>> expandableListDetail,SaveList saveFromMainActivyti) {
         this.context = context;
         this.expandableListTitle = expandableListTitle;
         this.expandableListDetail = expandableListDetail;
+        this.save = saveFromMainActivyti;
     }
+
 
     @Override
     public Object getChild(int listPosition, int expandedListPosition) {
@@ -38,16 +43,30 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public View getChildView(int listPosition, final int expandedListPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
-        final String expandedListText = (String) getChild(listPosition, expandedListPosition);
+       final String expandedListText = (String) getChild(listPosition, expandedListPosition);
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.list_item, null);
         }
+
         TextView expandedListTextView = (TextView) convertView
                 .findViewById(R.id.expandedListItem);
         expandedListTextView.setText(expandedListText);
+
+
+        List<ShopProgress> cela =  save.fullListShopProgList();
+
+        for (ShopProgress object: cela) {
+            if (object.getGroupPosition() == listPosition && object.getChildSelected() == expandedListPosition) {
+                convertView.setBackgroundColor(Color.GREEN);
+                break;
+            }else{
+                convertView.setBackgroundColor(Color.TRANSPARENT);
+            }
+        }
         return convertView;
+
     }
 
     @Override
@@ -85,6 +104,7 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
         listTitleTextView.setTypeface(null, Typeface.BOLD);
         listTitleTextView.setText(listTitle);
         return convertView;
+
     }
 
     @Override

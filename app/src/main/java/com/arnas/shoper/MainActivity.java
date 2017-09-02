@@ -511,34 +511,64 @@ public class MainActivity extends AppCompatActivity {
 public void colorChanger(ExpandableListView parent, View v,
                          int groupPosition, int childPosition, long id){
     if (getColor(v) == Color.GREEN){
-        ShopProgress sp = save.changeShopProgress(groupPosition,false);
+        int spInt = save.changeShopProgress(groupPosition,childPosition,false);
         v.setBackgroundColor (Color.TRANSPARENT);
-        //parent.getChildAt(groupPosition).setBackgroundColor(Color.DKGRAY);
+        parent.getChildAt(groupPosition+save.getExpandleListChanger(groupPosition)).setBackgroundColor(Color.TRANSPARENT);
         Toast.makeText(getApplicationContext(),
-                sp.getChildSelected()+" of "+parent.getExpandableListAdapter().getChildrenCount(groupPosition), Toast.LENGTH_LONG)
+                spInt+" of "+parent.getExpandableListAdapter().getChildrenCount(groupPosition), Toast.LENGTH_LONG)
                 .show();
     }else {
-        if(save.addRemoveShopProgress(groupPosition)){
-            ShopProgress sp = save.changeShopProgress(groupPosition,true);
+        if(save.addRemoveShopProgress(groupPosition,childPosition,v,parent)){
+           int spInt = save.changeShopProgress(groupPosition,childPosition,true);
             Toast.makeText(getApplicationContext(),
-                    sp.getChildSelected()+" of "+parent.getExpandableListAdapter().getChildrenCount(groupPosition), Toast.LENGTH_LONG)
+                    "ShopProgresses "+spInt+" of "+parent.getExpandableListAdapter().getChildrenCount(groupPosition), Toast.LENGTH_LONG)
+                    .show();
+            Toast.makeText(getApplicationContext(),
+                    spInt+" of "+parent.getExpandableListAdapter().getChildrenCount(groupPosition), Toast.LENGTH_LONG)
                     .show();
 
-            if (sp.getChildSelected() == parent.getExpandableListAdapter().getChildrenCount(groupPosition)){
-                //parent.getChildAt(groupPosition).setBackgroundColor(Color.RED);
+            if (spInt == parent.getExpandableListAdapter().getChildrenCount(groupPosition)){
+                parent.getChildAt(groupPosition+save.getExpandleListChanger(groupPosition)).setBackgroundColor(Color.YELLOW);
 
             }
         }else{
-            ShopProgress sp = save.changeShopProgress(groupPosition,true);
-            if (sp.getChildSelected() == parent.getExpandableListAdapter().getChildrenCount(groupPosition)){
-                //parent.getChildAt(groupPosition).setBackgroundColor(Color.YELLOW);
+            int spInt  = save.changeShopProgress(groupPosition,childPosition,true);
+            Toast.makeText(getApplicationContext(),
+                    "ShopProgresses "+spInt+" of "+parent.getExpandableListAdapter().getChildrenCount(groupPosition), Toast.LENGTH_LONG)
+                    .show();
+            if (spInt == parent.getExpandableListAdapter().getChildrenCount(groupPosition)){
+                parent.getChildAt(groupPosition+save.getExpandleListChanger(groupPosition)).setBackgroundColor(Color.YELLOW);
 
             }
             Toast.makeText(getApplicationContext(),
-                    sp.getChildSelected()+" of "+parent.getExpandableListAdapter().getChildrenCount(groupPosition), Toast.LENGTH_LONG)
+                    spInt+" of "+parent.getExpandableListAdapter().getChildrenCount(groupPosition), Toast.LENGTH_LONG)
                     .show();
         }
         v.setBackgroundColor(Color.GREEN);
+    }
+
+}
+
+public void TrasparentColorMode(int groupid,boolean expend){
+    List<ShopProgress> fspl =save.fullListShopProgList();
+
+    for (ShopProgress object: fspl) {
+        if (object.getGroupPosition() == groupid) {
+
+            if (expend){
+
+               //nextChild.setBackgroundColor(Color.CYAN);
+              //long nextChild = expandableListView.getExpandableListAdapter().getChildId(object.getGroupPosition(), object.getChildSelected());
+
+                //nextChild.setBackgroundColor(Color.CYAN)
+
+            }else {
+                //parent.getChildAt(groupPosition+save.getExpandleListChanger(groupPosition)).setBackgroundColor(Color.YELLOW);
+                View nextChild = object.currentView;
+                nextChild.setBackgroundColor(Color.TRANSPARENT);
+            }
+            //expandableListView.getExpandableListAdapter().getChildView(object.getGroupPosition(), object.getChildSelected(),false,object.getCurrentView(),object.getParent()).setBackgroundColor(Color.BLUE);
+        }
     }
 }
     ExpandableListView expandableListView;
@@ -555,12 +585,45 @@ public void colorChanger(ExpandableListView parent, View v,
         expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
         expandableListDetail = ExpandableListDataPump.getData(shoperMeals,save);
         expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
-        expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableListDetail);
-
+        expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableListDetail,save);
         expandableListView.setAdapter(expandableListAdapter);
 
 
+
+        expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+
+            @Override
+            public void onGroupExpand(int groupPosition) {
+
+                Toast.makeText(getApplicationContext(),
+                        expandableListView.getExpandableListAdapter().getChildrenCount(groupPosition) + " List extented.",
+                        Toast.LENGTH_SHORT).show();
+                //TrasparentColorMode(groupPosition,true);
+               save.addExpandleListChanger(groupPosition,expandableListView.getExpandableListAdapter().getChildrenCount(groupPosition));
+
+            }
+        });
+
+        expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+
+            @Override
+            public void onGroupCollapse(int groupPosition) {
+
+                Toast.makeText(getApplicationContext(),
+                        expandableListView.getExpandableListAdapter().getChildrenCount(groupPosition) + " List collpsed.",
+                        Toast.LENGTH_SHORT).show();
+
+                //TrasparentColorMode(groupPosition,false);
+             save.removeExpandleListChanger(groupPosition, expandableListView.getExpandableListAdapter().getChildrenCount(groupPosition));
+
+
+
+
+            }
+        });
+
         expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+
             @Override
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
@@ -579,6 +642,7 @@ public void colorChanger(ExpandableListView parent, View v,
         @Override
         public void onClick(View v){
              save.clearShopProgressList();
+             save.clearExpandleListChanger();
             setContentView(R.layout.activity_main);
 
             final TableLayout TableMain = (TableLayout) findViewById(R.id.myMainList);

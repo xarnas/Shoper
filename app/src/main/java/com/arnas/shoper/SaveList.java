@@ -1,6 +1,8 @@
 package com.arnas.shoper;
 
 import android.content.Context;
+import android.view.View;
+import android.widget.ExpandableListView;
 
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ public class SaveList {
     List<DyMealsList3> list2 = new ArrayList<DyMealsList3>();
     List<CategoryList> cList = new ArrayList<CategoryList>();
     List<ShopProgress> shopProgressesList = new ArrayList<ShopProgress>();
+    List<ExpandleListChanger> elc = new ArrayList<ExpandleListChanger>();
      public int lastID;
 
     public void setCatid(int catid) {
@@ -28,61 +31,95 @@ public class SaveList {
 
     public int catid=0;
 
-SaveList(){
+SaveList() {
     setLastID(0);
     String[] myCat = {"Pieno gaminiai ir kiaušiniai",
-                        "Mėsa",
-                        "Žuvis",
-                        "Miltiniai gaminiai ir košės",
-                        "Duonos gaminiai ir konditerija",
-                        "Daržovės ir vaisiai",
-                        "Higienos prekės",
-                        "Konservuoti gaminiai",
-                        "Kava,Kakava ir Arbata",
-                        "Saldumynai",
-                        "Šaldytas maistas",
-                        "Namų priežiuros prekės",
-                        "Kūdikiu ir vaikų prekės",
-                        "Alkoholiniai gėrimai"
-                       };
-    for(int i=0; i <myCat.length-1 ;i++){
-        this.catid+=1;
-        CategoryList ct1 = new CategoryList(catid,myCat[i]);
+            "Mėsa",
+            "Žuvis",
+            "Miltiniai gaminiai ir košės",
+            "Duonos gaminiai ir konditerija",
+            "Daržovės ir vaisiai",
+            "Higienos prekės",
+            "Konservuoti gaminiai",
+            "Kava,Kakava ir Arbata",
+            "Saldumynai",
+            "Šaldytas maistas",
+            "Namų priežiuros prekės",
+            "Kūdikiu ir vaikų prekės",
+            "Alkoholiniai gėrimai"
+    };
+    for (int i = 0; i < myCat.length - 1; i++) {
+        this.catid += 1;
+        CategoryList ct1 = new CategoryList(catid, myCat[i]);
         addCategory(ct1);
 
     }
-
-
+}
+public void addExpandleListChanger(int groupnumber,int groupsize){
+    ExpandleListChanger elcitem = new ExpandleListChanger(groupnumber,groupsize);
+    elc.add(elcitem);
 
 }
-public boolean addRemoveShopProgress(int groupId){
+public void removeExpandleListChanger(int groupnumber,int groupsize){
+
+
+    for (ExpandleListChanger object: elc) {
+        if (object.getGroupNumber() == groupnumber && object.getGroupSize()==groupsize){
+            elc.remove(object);
+            break;
+
+        }
+    }
+
+}
+public List<ExpandleListChanger> eclFullList(){
+      return elc;
+}
+
+public int getExpandleListChanger(int groupnumber){
+    int totalSum=0;
+    for (ExpandleListChanger object: elc) {
+        if (object.getGroupNumber() < groupnumber){
+            totalSum+=object.getGroupSize();
+        }
+    }
+    return totalSum;
+}
+public void clearExpandleListChanger(){
+    elc.clear();
+}
+
+public boolean addRemoveShopProgress(int groupId, int childid, View currentView, ExpandableListView parent){
     for (ShopProgress object: shopProgressesList) {
-        if (object.getGroupPosition()== groupId){
+        if (object.getGroupPosition()== groupId && object.getChildSelected() == childid){
             return false;
         }
     }
      ShopProgress sp = new ShopProgress();
      sp.setGroupPosition(groupId);
-     sp.setChildSelected(0);
+     sp.setChildSelected(childid);
+     sp.setCurrentView(currentView);
+     sp.setParent(parent);
      shopProgressesList.add(sp);
     return true;
 }
 public void clearShopProgressList(){
     shopProgressesList.clear();
 }
-public ShopProgress changeShopProgress(int groupId,boolean prog){
+
+public int changeShopProgress(int groupId,int childid,boolean prog){
+    int totalSelected=0;
     for (ShopProgress object: shopProgressesList) {
-        if (object.getGroupPosition()==groupId){
-            if (prog) {
-                object.setChildSelected(object.getChildSelected()+1);
-            }else{
-                object.setChildSelected(object.getChildSelected()-1);
-            }
-            return object;
+        if (object.getGroupPosition()==groupId) {
+          totalSelected=+1;
         }
     }
-    return null;
+    return totalSelected;
 
+}
+
+public List<ShopProgress> fullListShopProgList(){
+    return shopProgressesList;
 }
 public void UpdateCatItem(int id, CategoryList newName ){
          cList.set(id,newName);
