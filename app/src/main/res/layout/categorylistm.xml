@@ -48,20 +48,10 @@
         android:layout_height="119dp"
         android:orientation="horizontal"
         android:gravity="center"
+        android:id="@+id/linearLayout"
+        android:weightSum="1"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/linearLayout"
-        android:weightSum="1">
-
-        <Button
-            android:id="@+id/newCategory"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Pridėti nauja kategorija" />
-
-
-
-
+        android:layout_alignParentStart="true">
     </LinearLayout>
 </RelativeLayout>

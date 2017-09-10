@@ -1,4 +1,11 @@
 <resources>
-    <string name="app_name">Shoper</string>
+    <string name="app_name">Krepšelis</string>
     <string name="action_settings">Settings</string>
+    <string name="action_newlist">Naujas įrašas</string>
+    <string name="action_newcategory">Kategorijos</string>
+    <string name="action_generlist">Generuoti sąrašą</string>
+    <string name="action_backToMain">Atgal</string>
+    <string name="addCheckBox">Pridėti</string>
+    <string name="action_save">Baigti ir Išsaugoti</string>
+    <string name="action_newcat">Prideti kategorija</string>
 </resources>

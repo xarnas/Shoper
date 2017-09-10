@@ -17,9 +17,9 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="74dp"
-        android:layout_above="@+id/linearLayout"
         android:layout_alignParentTop="true"
-        android:layout_weight="0.96">
+        android:layout_weight="0.96"
+        android:layout_alignParentBottom="true">
 
         <TableLayout
             android:id="@+id/myMainList"
@@ -43,34 +43,4 @@
                 android:layout_height="match_parent" />
         </TableLayout>
     </ScrollView>
-
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="119dp"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/linearLayout"
-        android:weightSum="1">
-
-        <Button
-            android:id="@+id/newList"
-            android:layout_width="159dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="32dp"
-            android:text="Sukurti naują sąrašą" />
-
-        <Button
-            android:id="@+id/newCategory"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Pridėti nauja kategorija" />
-
-
-
-
-    </LinearLayout>
 </RelativeLayout>

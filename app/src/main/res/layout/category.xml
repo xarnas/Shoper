@@ -46,7 +46,6 @@
                 android:layout_height="wrap_content"
                 android:text="Atšaukti"
                 android:layout_weight="0.10" />
-
         </LinearLayout>
     </LinearLayout>
 
