@@ -75,6 +75,7 @@ public class newListActivity extends AppCompatActivity {
         }
         if (id == R.id.addCheckBox) {
             final TableLayout Table = (TableLayout) findViewById(R.id.tablein);
+            openHeadId=save.getLastID()+1;
             addItemsOnSpinner(null,Table,save.getLastID());
         }
         if (id == R.id.saveMyItems) {
@@ -130,26 +131,18 @@ public class newListActivity extends AppCompatActivity {
                         TextView text2 = new TextView(getApplicationContext());
                         TextView text3 = new TextView(getApplicationContext());
                         row.setId(100 + nIndex);
-                        text1.setText(" Edit ");
+                        text1.setText(" keisti ");
                         row.addView(text1);
-                        text2.setText("Delete ");
+                        text2.setText("ištrinti ");
                         row.addView(text2);
-                        text3.setText("Cancel");
+                        text3.setText("atšaukti");
                         row.addView(text3);
 
 
                         text1.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                if (indicator == 0) {
                                     addItemsOnSpinner(checkBox, Table, checkBox.getId());
-                                } else {
-                                    editMode = true;
-                                    ArrayList<DyGroceriesList3> tmplist = (ArrayList<DyGroceriesList3>) save.fullListHead(checkBox.getId());
-                                    openHeadId = checkBox.getId();
-                                    checkBoxList(checkBox.getText().toString(), tmplist);
-                                }
-
                             }
                         });
 
@@ -260,22 +253,11 @@ public class newListActivity extends AppCompatActivity {
 
                 if (checkBox == null) {
                     final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
-
-                    if (editMode == true) {
-                        int groceriesCount = save.GroceriesLastId(openHeadId) + 1;
-                        checkBoxNew.setId(groceriesCount);
-                        DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(), inputName.getText().toString(), inputUnit.getText().toString(), spinner1.getSelectedItem().toString(), openHeadId);
-                        FileWrite("Groceries", inputName.getText().toString() + ":" + inputUnit.getText().toString() + ":" + spinner1.getSelectedItem().toString() + ":" + String.valueOf(groceriesCount) + ":" + String.valueOf(openHeadId) + ";");
-                        save.addList(dg3);
-                    } else {
                         int groceriesCount = save.GroceriesLastId(MainHeadId + 1) + 1;
                         checkBoxNew.setId(groceriesCount);
                         DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(), inputName.getText().toString(), inputUnit.getText().toString(), spinner1.getSelectedItem().toString(), MainHeadId + 1);
                         FileWrite("Groceries", inputName.getText().toString() + ":" + inputUnit.getText().toString() + ":" + spinner1.getSelectedItem().toString() + ":" + String.valueOf(groceriesCount) + ":" + String.valueOf(MainHeadId + 1) + ";");
                         save.addList(dg3);
-                    }
-
-
                     checkBoxNew.setText(checkBoxValue);
                     checcBoxFuncionality(Table, checkBoxNew, 0);
                 } else {

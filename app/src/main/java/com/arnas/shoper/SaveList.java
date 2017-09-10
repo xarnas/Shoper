@@ -78,27 +78,6 @@ public class SaveList implements Parcelable {
 
 SaveList() {
     setLastID(0);
-    String[] myCat = {"Pieno gaminiai ir kiaušiniai",
-            "Mėsa",
-            "Žuvis",
-            "Miltiniai gaminiai ir košės",
-            "Duonos gaminiai ir konditerija",
-            "Daržovės ir vaisiai",
-            "Higienos prekės",
-            "Konservuoti gaminiai",
-            "Kava,Kakava ir Arbata",
-            "Saldumynai",
-            "Šaldytas maistas",
-            "Namų priežiuros prekės",
-            "Kūdikiu ir vaikų prekės",
-            "Alkoholiniai gėrimai"
-    };
-    for (int i = 0; i < myCat.length - 1; i++) {
-        this.catid += 1;
-        CategoryList ct1 = new CategoryList(catid, myCat[i]);
-        addCategory(ct1);
-
-    }
 }
 
 public void DyGroceriesList3Clear(){
@@ -239,6 +218,26 @@ public void UpdateCatItem(int id, CategoryList newName ){
         list.remove(dg3);
     }
 
+    public String removeItem(int id, int openHeadid, String fullListGR3){
+
+        int possition = getAdapterItemPosition(id);
+        DyGroceriesList3 dg3 = singleItem(possition, openHeadid);
+
+        String newGR3String="";
+        String[] tokensGR = fullListGR3.split(";");
+        for (String t : tokensGR) {
+            String[] tokens2 = t.split(":");
+            if (!tokens2[0].isEmpty() && !tokens2[0].contains("\n") && Integer.parseInt(tokens2[4])!= openHeadid){
+                newGR3String=newGR3String+tokens2[0]+":"+tokens2[1]+":"+tokens2[2]+":"+tokens2[3]+":"+tokens2[4]+";";
+            }else{
+                if (!tokens2[0].isEmpty() && !tokens2[0].contains("\n") && Integer.parseInt(tokens2[3])!= id){
+                    newGR3String=newGR3String+tokens2[0]+":"+tokens2[1]+":"+tokens2[2]+":"+tokens2[3]+":"+tokens2[4]+";";
+                }
+            }
+        }
+        list.remove(dg3);
+        return newGR3String;
+    }
 
     public String removeItem(int id, String fullListDM3,String fullListGR3){
 

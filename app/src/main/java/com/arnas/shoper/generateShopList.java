@@ -94,9 +94,9 @@ public class generateShopList extends AppCompatActivity {
                 }
             }else{
                 int spInt  = save.changeShopProgress(groupPosition,childPosition,true);
-                Toast.makeText(getApplicationContext(),
+                /*Toast.makeText(getApplicationContext(),
                         "ShopProgresses "+spInt+" of "+parent.getExpandableListAdapter().getChildrenCount(groupPosition), Toast.LENGTH_LONG)
-                        .show();
+                        .show();*/
                 if (spInt == parent.getExpandableListAdapter().getChildrenCount(groupPosition)){
                     parent.getChildAt(groupPosition+save.getExpandleListChanger(groupPosition)).setBackgroundColor(Color.YELLOW);
 
@@ -126,9 +126,9 @@ public class generateShopList extends AppCompatActivity {
             @Override
             public void onGroupExpand(int groupPosition) {
 
-                Toast.makeText(getApplicationContext(),
-                        expandableListView.getExpandableListAdapter().getChildrenCount(groupPosition) + " List extented.",
-                        Toast.LENGTH_SHORT).show();
+                /*Toast.makeText(getApplicationContext(),
+                       expandableListView.getExpandableListAdapter().getChildrenCount(groupPosition) + " List extented.",
+                        Toast.LENGTH_SHORT).show();*/
                 save.addExpandleListChanger(groupPosition,expandableListView.getExpandableListAdapter().getChildrenCount(groupPosition));
 
             }
@@ -139,9 +139,9 @@ public class generateShopList extends AppCompatActivity {
             @Override
             public void onGroupCollapse(int groupPosition) {
 
-                Toast.makeText(getApplicationContext(),
+                /*Toast.makeText(getApplicationContext(),
                         expandableListView.getExpandableListAdapter().getChildrenCount(groupPosition) + " List collpsed.",
-                        Toast.LENGTH_SHORT).show();
+                        Toast.LENGTH_SHORT).show();*/
 
                 save.removeExpandleListChanger(groupPosition, expandableListView.getExpandableListAdapter().getChildrenCount(groupPosition));
 

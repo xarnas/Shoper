@@ -162,12 +162,12 @@ public class editListActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(),
                                         "Ištrinta prekė " + checkBox.getText().toString(), Toast.LENGTH_LONG)
                                         .show();
-                                int a = checkBox.getId();
-                                if (editMode) {
-                                    save.removeItem(checkBox.getId(), openHeadId);
-                                } else {
-                                    //save.removeItem(checkBox.getId());
-                                }
+
+                                    String GR3 = FileRead("Groceries");
+                                    String modiList = save.removeItem(checkBox.getId(),openHeadId,GR3);
+                                    ClearFile("Groceries");
+                                    FileWrite("Groceries", modiList);
+
                                 Table.removeViewAt(nIndex);
                                 Table.removeView(findViewById(100 + nIndex));
                             }
