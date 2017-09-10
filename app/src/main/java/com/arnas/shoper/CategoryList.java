@@ -1,5 +1,8 @@
 package com.arnas.shoper;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +10,7 @@ import java.util.List;
  * Created by arnaspetrauskas on 23/03/2017.
  */
 
-public class CategoryList {
+public class CategoryList implements Parcelable {
     public int id;
     public String name;
 
@@ -16,6 +19,24 @@ public class CategoryList {
         setName(cat);
 
     }
+
+    protected CategoryList(Parcel in) {
+        id = in.readInt();
+        name = in.readString();
+    }
+
+    public static final Creator<CategoryList> CREATOR = new Creator<CategoryList>() {
+        @Override
+        public CategoryList createFromParcel(Parcel in) {
+            return new CategoryList(in);
+        }
+
+        @Override
+        public CategoryList[] newArray(int size) {
+            return new CategoryList[size];
+        }
+    };
+
     public int getId() {
         return id;
     }
@@ -32,4 +53,14 @@ public class CategoryList {
         this.name = name;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(name);
+    }
 }

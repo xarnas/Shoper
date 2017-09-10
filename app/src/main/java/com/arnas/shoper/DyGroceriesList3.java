@@ -2,9 +2,11 @@
 package com.arnas.shoper;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 
-public class DyGroceriesList3 extends AppCompatActivity {
+public class DyGroceriesList3 extends AppCompatActivity implements Parcelable {
 
     protected String Name;
     protected String Unit;
@@ -12,6 +14,26 @@ public class DyGroceriesList3 extends AppCompatActivity {
     protected int HeadId;
     protected int id;
 
+
+    protected DyGroceriesList3(Parcel in) {
+        Name = in.readString();
+        Unit = in.readString();
+        ListItem = in.readString();
+        HeadId = in.readInt();
+        id = in.readInt();
+    }
+
+    public static final Creator<DyGroceriesList3> CREATOR = new Creator<DyGroceriesList3>() {
+        @Override
+        public DyGroceriesList3 createFromParcel(Parcel in) {
+            return new DyGroceriesList3(in);
+        }
+
+        @Override
+        public DyGroceriesList3[] newArray(int size) {
+            return new DyGroceriesList3[size];
+        }
+    };
 
     public int getHeadId(){
         return HeadId;
@@ -65,8 +87,19 @@ public class DyGroceriesList3 extends AppCompatActivity {
     }
 
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
-
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(Name);
+        dest.writeString(Unit);
+        dest.writeString(ListItem);
+        dest.writeInt(HeadId);
+        dest.writeInt(id);
+    }
 }
 
 

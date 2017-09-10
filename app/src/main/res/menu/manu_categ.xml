@@ -3,19 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.arnas.shoper.MainActivity">
     <item
-        android:id="@+id/newList"
+        android:id="@+id/newCategoryItem"
         android:checkable="false"
         android:orderInCategory="100"
-        android:title="@string/action_newlist"
+        android:title="@string/action_newcat"
         app:showAsAction="never" />
     <item
-        android:id="@+id/newCategory"
+        android:id="@+id/backToMainMenu2"
+        android:checkable="false"
         android:orderInCategory="100"
-        android:title="@string/action_newcategory"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/generList"
-        android:orderInCategory="100"
-        android:title="@string/action_generlist"
+        android:title="@string/action_backToMain"
         app:showAsAction="never" />
 </menu>

@@ -9,8 +9,10 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 
@@ -53,8 +55,6 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
         TextView expandedListTextView = (TextView) convertView
                 .findViewById(R.id.expandedListItem);
         expandedListTextView.setText(expandedListText);
-
-
         List<ShopProgress> cela =  save.fullListShopProgList();
 
         for (ShopProgress object: cela) {
@@ -103,6 +103,29 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
                 .findViewById(R.id.listTitle);
         listTitleTextView.setTypeface(null, Typeface.BOLD);
         listTitleTextView.setText(listTitle);
+
+        List<ShopProgress> cela =  save.fullListShopProgList();
+
+
+
+      ArrayList<String> currentParent = (ArrayList<String>) getElementByIndex(expandableListDetail,listPosition);
+          int parentCount =currentParent.size();
+            //parentName=entry.getKey().toString();
+
+
+
+        int totalChildrenSelected = 0;
+        for (ShopProgress object: cela) {
+            if (object.getGroupPosition() == listPosition ) {
+                totalChildrenSelected++;
+            };
+        }
+         if (parentCount == totalChildrenSelected){
+             convertView.setBackgroundColor(Color.YELLOW);
+         }else {
+             convertView.setBackgroundColor(Color.TRANSPARENT);
+         }
+
         return convertView;
 
     }
@@ -115,5 +138,9 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public boolean isChildSelectable(int listPosition, int expandedListPosition) {
         return true;
+    }
+
+    public Object getElementByIndex(HashMap map,int index){
+        return map.get( (map.keySet().toArray())[ index ] );
     }
 }
