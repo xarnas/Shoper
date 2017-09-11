@@ -188,28 +188,32 @@ protected void TxtViewFuncionality(final TableLayout Table, final TextView TxtVi
         }
         });
 
-
-        text2.setOnClickListener(new View.OnClickListener() {
+            text2.setOnClickListener(new View.OnClickListener() {
 @Override
 public void onClick(View v) {
-        Toast.makeText(getApplicationContext(),
-        "Ištrinta kategorija " + TxtView.getText().toString(), Toast.LENGTH_LONG)
-        .show();
-        save.removeItemCat(TxtView.getId());
-        String UpdateCatList="";
-        String catRawList = FileRead("Category");
-        String[] myCat = catRawList.split(";");
-        for (String t : myCat) {
-        String[] token = t.split(":");
-        if (!token[0].isEmpty() && !token[0].contains("\n")){
-            if(Integer.parseInt(token[0])!= TxtView.getId()) {
-                UpdateCatList = UpdateCatList + token[0] + ":" + token[1] + ";";
+         for (CategoryList object : save.fullListCATG()) {
+            if (object.getName().equals(TxtView.getText().toString())) {
+                save.removeItemCat(object.getId());
+                String UpdateCatList = "";
+                String catRawList = FileRead("Category");
+                String[] myCat = catRawList.split(";");
+                for (String t : myCat) {
+                    String[] token = t.split(":");
+                    if (!token[0].isEmpty() && !token[0].contains("\n")) {
+                        if (Integer.parseInt(token[0]) != object.getId()) {
+                            UpdateCatList = UpdateCatList + token[0] + ":" + token[1] + ";";
+                        }
+                    }
+                }
+                ClearFile("Category");
+                FileWrite("Category", UpdateCatList);
+                Table.removeViewAt(nIndex);
+                Table.removeView(findViewById(100 + nIndex));
+                Toast.makeText(getApplicationContext(),
+                        "Ištrinta kategorija " + TxtView.getText().toString(), Toast.LENGTH_LONG)
+                        .show();
             }
-        }}
-        ClearFile("Category");
-        FileWrite("Category",UpdateCatList);
-        Table.removeViewAt(nIndex);
-        Table.removeView(findViewById(100 + nIndex));
+        }
         }
         });
 
@@ -217,9 +221,7 @@ public void onClick(View v) {
         text3.setOnClickListener(new View.OnClickListener() {
 @Override
 public void onClick(View v) {
-                           /*     Toast.makeText(getApplicationContext(),
-                                        "Cancel ME!!!", Toast.LENGTH_LONG)
-                                        .show();*/
+
         lock = false;
 final int nIndex = Table.indexOfChild(TxtView);
         Table.removeView(findViewById(100 + nIndex));
