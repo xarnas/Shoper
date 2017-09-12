@@ -36,14 +36,10 @@ public class ExpandableListDataPump {
             }
         }
 
-
-
-
-
         for (String objecti : MainList) {
             list[iy] = new ArrayList<String>();
             for (DyGroceriesList3 objectii : FullItemList) {
-                if (objecti.equals(objectii.getListItem())){
+                if (objecti.equals(objectii.getListItem()) && objectii.getActiveStatus() != 1){
                     list[iy].add(objectii.getName()+" "+objectii.getUnit());
                 }
             }

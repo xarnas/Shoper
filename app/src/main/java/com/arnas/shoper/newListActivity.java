@@ -149,17 +149,39 @@ public class newListActivity extends AppCompatActivity {
                         text2.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Toast.makeText(getApplicationContext(),
-                                        "Ištrinta prekė " + checkBox.getText().toString(), Toast.LENGTH_LONG)
-                                        .show();
-                                int a = checkBox.getId();
-                                if (editMode) {
-                                    save.removeItem(checkBox.getId(), openHeadId);
-                                } else {
-                                    //save.removeItem(checkBox.getId());
-                                }
-                                Table.removeViewAt(nIndex);
-                                Table.removeView(findViewById(100 + nIndex));
+
+                                LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                                final View popupViewCat = layoutInflater.inflate(R.layout.message, null);
+                                final PopupWindow popupWindowCat = new PopupWindow(popupViewCat, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+                                Button btnAcppect = (Button) popupViewCat.findViewById(R.id.deleteItem);
+                                Button btnDismiss = (Button) popupViewCat.findViewById(R.id.dismiss);
+                                final TextView inputName = (TextView)popupViewCat.findViewById(R.id.deleteItemText);
+                                inputName.setText("Ar norite ištrinti "+checkBox.getText().toString().toUpperCase()+" ?");
+                                btnDismiss.setOnClickListener(new View.OnClickListener(){
+                                    @Override
+                                    public void onClick(View V){
+                                        popupWindowCat.dismiss();
+                                    }
+                                });
+
+                                btnAcppect.setOnClickListener(new View.OnClickListener(){
+                                    @Override
+                                    public void onClick(View V){
+                                        Toast.makeText(getApplicationContext(),
+                                                "Ištrinta prekė " + checkBox.getText().toString(), Toast.LENGTH_LONG)
+                                                .show();
+                                        int a = checkBox.getId();
+                                        if (editMode) {
+                                            save.removeItem(checkBox.getId(), openHeadId);
+                                        } else {
+                                            //save.removeItem(checkBox.getId());
+                                        }
+                                        Table.removeViewAt(nIndex);
+                                        Table.removeView(findViewById(100 + nIndex));
+                                        popupWindowCat.dismiss();
+                                    }
+                                });
+
                             }
                         });
                         text3.setOnClickListener(new View.OnClickListener() {

@@ -239,6 +239,29 @@ public void UpdateCatItem(int id, CategoryList newName ){
         return newGR3String;
     }
 
+
+    public String changeActiveStatus(int id, int openHeadid, String fullListGR3, int activeStatus){
+
+        String newGR3String="";
+        String[] tokensGR = fullListGR3.split(";");
+        for (String t : tokensGR) {
+            String[] tokens2 = t.split(":");
+            if (!tokens2[0].isEmpty() && !tokens2[0].contains("\n")) {
+                if (Integer.parseInt(tokens2[4]) == openHeadid && Integer.parseInt(tokens2[3]) == id) {
+                    newGR3String = newGR3String + tokens2[0] + ":" + tokens2[1] + ":" + tokens2[2] + ":" + tokens2[3] + ":" + tokens2[4] + ":" + activeStatus + ";";
+                } else {
+                    if (tokens2.length == 6) {
+                        newGR3String = newGR3String + tokens2[0] + ":" + tokens2[1] + ":" + tokens2[2] + ":" + tokens2[3] + ":" + tokens2[4] +":"+tokens2[5]+";";
+                   }else{
+                      newGR3String = newGR3String + tokens2[0] + ":" + tokens2[1] + ":" + tokens2[2] + ":" + tokens2[3] + ":" + tokens2[4] + ";";
+                   }
+                }
+            }
+        }
+        return newGR3String;
+    }
+
+
     public String removeItem(int id, String fullListDM3,String fullListGR3){
 
         int possition = getAdapterItemPosition(id);
@@ -283,7 +306,7 @@ public void UpdateCatItem(int id, CategoryList newName ){
     public DyGroceriesList3 singleItem(int id,int openHeadId){
 
         for (DyGroceriesList3 item : list) {
-            if (item.getId() == id && item.HeadId == openHeadId) {
+            if (item.getId() == id && item.getHeadId() == openHeadId) {
                 return item;
             }
         }

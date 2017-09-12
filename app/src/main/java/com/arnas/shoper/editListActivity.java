@@ -1,6 +1,7 @@
 package com.arnas.shoper;
 
         import android.content.Intent;
+        import android.graphics.Color;
         import android.graphics.Typeface;
         import android.os.Bundle;
         import android.support.v7.app.AppCompatActivity;
@@ -43,6 +44,7 @@ public class editListActivity extends AppCompatActivity {
     int openHeadId;
     int groceriesId;
     String checkBoxValue;
+    String statusName;
 
 
     @Override
@@ -103,18 +105,21 @@ public class editListActivity extends AppCompatActivity {
                 checkBoxNew.setId(object.getId());
                 checkBoxNew.setText(object.getName()+" "+object.getUnit()+" "+object.getListItem());
                 checkBoxNew.setTypeface(null,Typeface.BOLD_ITALIC);
-                checcBoxFuncionality(Table,checkBoxNew,0);
+                checcBoxFuncionality(Table,checkBoxNew,0,object);
 
             }
         }
     }
 
 
-    protected void checcBoxFuncionality(final TableLayout Table, final CheckBox checkBox, final int indicator) {
+    protected void checcBoxFuncionality(final TableLayout Table, final CheckBox checkBox, final int indicator, final DyGroceriesList3 DG3object) {
         checkBox.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
+
+
+                    final int activeStatus = DG3object.getActiveStatus();
                 for (int i = 0; i < 1; i++) {
                     if (!checkBox.isChecked()) {
                         final int nIndex = Table.indexOfChild(checkBox);
@@ -132,13 +137,24 @@ public class editListActivity extends AppCompatActivity {
                         final TextView text1 = new TextView(getApplicationContext());
                         TextView text2 = new TextView(getApplicationContext());
                         TextView text3 = new TextView(getApplicationContext());
+                        final TextView text4 = new TextView(getApplicationContext());
                         row.setId(100 + nIndex);
                         text1.setText(" keisti ");
                         row.addView(text1);
-                        text2.setText("ištrinti ");
+                        text2.setText("  ištrinti ");
                         row.addView(text2);
-                        text3.setText("atšaukti");
+                        text3.setText("  atšaukti");
                         row.addView(text3);
+                        if (activeStatus == 1){
+                            statusName="Neaktyvus";
+                            text4.setTextColor(Color.RED);
+                        }else{
+                            text4.setTextColor(Color.GREEN);
+                            statusName="Aktyvus";
+                        }
+                        text4.setText("  "+statusName);
+                        row.addView(text4);
+
 
 
                         text1.setOnClickListener(new View.OnClickListener() {
@@ -159,29 +175,76 @@ public class editListActivity extends AppCompatActivity {
                         text2.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Toast.makeText(getApplicationContext(),
-                                        "Ištrinta prekė " + checkBox.getText().toString(), Toast.LENGTH_LONG)
-                                        .show();
 
-                                    String GR3 = FileRead("Groceries");
-                                    String modiList = save.removeItem(checkBox.getId(),openHeadId,GR3);
-                                    ClearFile("Groceries");
-                                    FileWrite("Groceries", modiList);
+                                LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                                final View popupViewCat = layoutInflater.inflate(R.layout.message, null);
+                                final PopupWindow popupWindowCat = new PopupWindow(popupViewCat, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+                                Button btnAcppect = (Button) popupViewCat.findViewById(R.id.deleteItem);
+                                Button btnDismiss = (Button) popupViewCat.findViewById(R.id.dismiss);
+                                final TextView inputName = (TextView)popupViewCat.findViewById(R.id.deleteItemText);
+                                inputName.setText("Ar norite ištrinti "+checkBox.getText().toString().toUpperCase()+" ?");
+                                btnDismiss.setOnClickListener(new View.OnClickListener(){
+                                    @Override
+                                    public void onClick(View V){
+                                        popupWindowCat.dismiss();
+                                    }
+                                });
 
-                                Table.removeViewAt(nIndex);
-                                Table.removeView(findViewById(100 + nIndex));
+                                btnAcppect.setOnClickListener(new View.OnClickListener(){
+                                    @Override
+                                    public void onClick(View V){
+                                        Toast.makeText(getApplicationContext(),
+                                                "Ištrinta prekė " + checkBox.getText().toString(), Toast.LENGTH_LONG)
+                                                .show();
+
+                                        String GR3 = FileRead("Groceries");
+                                        String modiList = save.removeItem(checkBox.getId(),openHeadId,GR3);
+                                        ClearFile("Groceries");
+                                        FileWrite("Groceries", modiList);
+                                        Table.removeViewAt(nIndex);
+                                        Table.removeView(findViewById(100 + nIndex));
+
+                                        popupWindowCat.dismiss();
+                                    }
+                                });
+                                popupWindowCat.showAtLocation(popupViewCat, Gravity.CENTER, 0, 0);
+
                             }
                         });
                         text3.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                           /*     Toast.makeText(getApplicationContext(),
-                                        "Cancel ME!!!", Toast.LENGTH_LONG)
-                                        .show();*/
+
                                 final int nIndex = Table.indexOfChild(checkBox);
                                 Table.removeView(findViewById(100 + nIndex));
                             }
                         });
+
+
+                        text4.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                DyGroceriesList3 tmpGros =  save.singleItem(checkBox.getId(),openHeadId);
+                                if (activeStatus == 0){
+                                    text4.setTextColor(Color.RED);
+                                    text4.setText(" Neaktyvus");
+                                    tmpGros.setActiveStatus(1);
+                                    String GR3 = FileRead("Groceries");
+                                    String activeChanger = save.changeActiveStatus(checkBox.getId(),openHeadId,GR3,1);
+                                    ClearFile("Groceries");
+                                    FileWrite("Groceries", activeChanger);
+                                }else{
+                                    text4.setTextColor(Color.GREEN);
+                                    text4.setText(" Aktyvus");
+                                    tmpGros.setActiveStatus(0);
+                                    String GR3 = FileRead("Groceries");
+                                    String activeChanger = save.changeActiveStatus(checkBox.getId(),openHeadId,GR3,0);
+                                    ClearFile("Groceries");
+                                    FileWrite("Groceries", activeChanger);
+                                }
+                            }
+                        });
+
 
                         Table.addView(row, nIndex + 1);
                     }
@@ -237,7 +300,7 @@ public class editListActivity extends AppCompatActivity {
         final EditText inputName = (EditText) popupView.findViewById(R.id.itemName);
         final EditText inputUnit = (EditText) popupView.findViewById(R.id.itemUnit);
 
-        spinner1.setSelection(2);
+        spinner1.setSelection(0);
 
         // if (!checkBox.getText().toString().isEmpty()) {
         if (checkBox != null) {
@@ -259,6 +322,7 @@ public class editListActivity extends AppCompatActivity {
                             .show();
                     return;
                 }
+                DyGroceriesList3 dg3=null;
                 checkBoxValue = inputName.getText().toString() + " " + inputUnit.getText().toString() + " " + spinner1.getSelectedItem().toString();
 
                 if (checkBox == null) {
@@ -267,22 +331,22 @@ public class editListActivity extends AppCompatActivity {
                     if (editMode == true) {
                         int groceriesCount = save.GroceriesLastId(openHeadId) + 1;
                         checkBoxNew.setId(groceriesCount);
-                        DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(), inputName.getText().toString(), inputUnit.getText().toString(), spinner1.getSelectedItem().toString(), openHeadId);
+                        dg3 = new DyGroceriesList3(checkBoxNew.getId(), inputName.getText().toString(), inputUnit.getText().toString(), spinner1.getSelectedItem().toString(), openHeadId);
                         FileWrite("Groceries", inputName.getText().toString() + ":" + inputUnit.getText().toString() + ":" + spinner1.getSelectedItem().toString() + ":" + String.valueOf(groceriesCount) + ":" + String.valueOf(openHeadId) + ";");
                         save.addList(dg3);
                     } else {
                         int groceriesCount = save.GroceriesLastId(MainHeadId) + 1;
                         checkBoxNew.setId(groceriesCount);
-                        DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(), inputName.getText().toString(), inputUnit.getText().toString(), spinner1.getSelectedItem().toString(), MainHeadId);
+                        dg3 = new DyGroceriesList3(checkBoxNew.getId(), inputName.getText().toString(), inputUnit.getText().toString(), spinner1.getSelectedItem().toString(), MainHeadId);
                         FileWrite("Groceries", inputName.getText().toString() + ":" + inputUnit.getText().toString() + ":" + spinner1.getSelectedItem().toString() + ":" + String.valueOf(groceriesCount) + ":" + String.valueOf(MainHeadId) + ";");
                         save.addList(dg3);
                     }
 
 
                     checkBoxNew.setText(checkBoxValue);
-                    checcBoxFuncionality(Table, checkBoxNew, 0);
+                    checcBoxFuncionality(Table, checkBoxNew, 0, dg3);
                 } else {
-                    DyGroceriesList3 dg3 = save.singleItem(checkBox.getId(), openHeadId);
+                    dg3 = save.singleItem(checkBox.getId(), openHeadId);
                     dg3.setName(inputName.getText().toString());
                     dg3.setUnit(inputUnit.getText().toString());
                     dg3.setListItem(spinner1.getSelectedItem().toString());

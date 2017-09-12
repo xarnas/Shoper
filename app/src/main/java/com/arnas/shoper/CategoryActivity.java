@@ -130,11 +130,11 @@ protected void TxtViewFuncionality(final TableLayout Table, final TextView TxtVi
         TextView text2 = new TextView(getApplicationContext());
         TextView text3 = new TextView(getApplicationContext());
         row.setId(100 + nIndex);
-        text1.setText(" keisti ");
+        text1.setText("  keisti ");
         row.addView(text1);
-        text2.setText("ištrinti ");
+        text2.setText("  ištrinti ");
         row.addView(text2);
-        text3.setText("atšaukti");
+        text3.setText("  atšaukti");
         row.addView(text3);
         text1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,29 +190,54 @@ protected void TxtViewFuncionality(final TableLayout Table, final TextView TxtVi
             text2.setOnClickListener(new View.OnClickListener() {
 @Override
 public void onClick(View v) {
-         for (CategoryList object : save.fullListCATG()) {
-            if (object.getName().equals(TxtView.getText().toString())) {
-                save.removeItemCat(object.getId());
-                String UpdateCatList = "";
-                String catRawList = FileRead("Category");
-                String[] myCat = catRawList.split(";");
-                for (String t : myCat) {
-                    String[] token = t.split(":");
-                    if (!token[0].isEmpty() && !token[0].contains("\n")) {
-                        if (Integer.parseInt(token[0]) != object.getId()) {
-                            UpdateCatList = UpdateCatList + token[0] + ":" + token[1] + ";";
+
+
+    LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+    final View popupViewCat = layoutInflater.inflate(R.layout.message, null);
+    final PopupWindow popupWindowCat = new PopupWindow(popupViewCat, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+    Button btnAcppect = (Button) popupViewCat.findViewById(R.id.deleteItem);
+    Button btnDismiss = (Button) popupViewCat.findViewById(R.id.dismiss);
+    final TextView inputName = (TextView)popupViewCat.findViewById(R.id.deleteItemText);
+    inputName.setText("Ar norite ištrinti "+TxtView.getText().toString().toUpperCase()+" ?");
+    btnDismiss.setOnClickListener(new View.OnClickListener(){
+        @Override
+        public void onClick(View V){
+            popupWindowCat.dismiss();
+        }
+    });
+
+    btnAcppect.setOnClickListener(new View.OnClickListener(){
+        @Override
+        public void onClick(View V){
+            for (CategoryList object : save.fullListCATG()) {
+                if (object.getName().equals(TxtView.getText().toString())) {
+                    save.removeItemCat(object.getId());
+                    String UpdateCatList = "";
+                    String catRawList = FileRead("Category");
+                    String[] myCat = catRawList.split(";");
+                    for (String t : myCat) {
+                        String[] token = t.split(":");
+                        if (!token[0].isEmpty() && !token[0].contains("\n")) {
+                            if (Integer.parseInt(token[0]) != object.getId()) {
+                                UpdateCatList = UpdateCatList + token[0] + ":" + token[1] + ";";
+                            }
                         }
                     }
+                    ClearFile("Category");
+                    FileWrite("Category", UpdateCatList);
+                    Table.removeViewAt(nIndex);
+                    Table.removeView(findViewById(100 + nIndex));
+                    Toast.makeText(getApplicationContext(),
+                            "Ištrinta kategorija " + TxtView.getText().toString(), Toast.LENGTH_LONG)
+                            .show();
                 }
-                ClearFile("Category");
-                FileWrite("Category", UpdateCatList);
-                Table.removeViewAt(nIndex);
-                Table.removeView(findViewById(100 + nIndex));
-                Toast.makeText(getApplicationContext(),
-                        "Ištrinta kategorija " + TxtView.getText().toString(), Toast.LENGTH_LONG)
-                        .show();
             }
+
+            popupWindowCat.dismiss();
         }
+    });
+    popupWindowCat.showAtLocation(popupViewCat, Gravity.CENTER, 0, 0);
+
         }
         });
 
