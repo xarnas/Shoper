@@ -760,6 +760,7 @@ public String generateShopingList(){
         super.onCreate(savedInstanceState);
         //ClearFile("Groceries"); //for data wipe
         //ClearFile("MainMenu"); // for data wipe
+        //ClearFile("Category"); // for data wipe
         setContentView(R.layout.activity_main);
         CreateCategory();
         LoadFullListFromFile("MainMenu");

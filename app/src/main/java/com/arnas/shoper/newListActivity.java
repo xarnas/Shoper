@@ -227,7 +227,7 @@ public class newListActivity extends AppCompatActivity {
         final EditText inputName = (EditText) popupView.findViewById(R.id.itemName);
         final EditText inputUnit = (EditText) popupView.findViewById(R.id.itemUnit);
 
-        spinner1.setSelection(2);
+        spinner1.setSelection(0);
 
         // if (!checkBox.getText().toString().isEmpty()) {
         if (checkBox != null) {

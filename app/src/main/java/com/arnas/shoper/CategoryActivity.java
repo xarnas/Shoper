@@ -187,7 +187,6 @@ protected void TxtViewFuncionality(final TableLayout Table, final TextView TxtVi
 
         }
         });
-
             text2.setOnClickListener(new View.OnClickListener() {
 @Override
 public void onClick(View v) {
@@ -223,7 +222,7 @@ public void onClick(View v) {
 public void onClick(View v) {
 
         lock = false;
-final int nIndex = Table.indexOfChild(TxtView);
+        final int nIndex = Table.indexOfChild(TxtView);
         Table.removeView(findViewById(100 + nIndex));
         }
         });
