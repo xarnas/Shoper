@@ -95,6 +95,53 @@ public class newListActivity extends AppCompatActivity {
 
         titleView.setText(name);
         titleView.setTypeface(null, Typeface.BOLD);
+
+
+
+        titleView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                final View popupView1 = layoutInflater.inflate(R.layout.newlisti, null);
+                final PopupWindow popupWindow1 = new PopupWindow(popupView1, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+                Button btnAcppectList = (Button) popupView1.findViewById(R.id.saveItemList);
+                Button btnDismissList = (Button) popupView1.findViewById(R.id.dismissList);
+                final EditText inputName = (EditText)popupView1.findViewById(R.id.itemNameList);
+                inputName.setText(titleView.getText());
+
+
+                btnAcppectList.setOnClickListener(new Button.OnClickListener(){
+                    @Override
+                    public void onClick(View v){
+
+                        titleView.setText(inputName.getText());
+                        titleView.setTypeface(null, Typeface.BOLD);
+                        //String DM3 = FileRead("MainMenu");
+                        //String Changer = save.changeMainMenuTitle(openHeadId,DM3,inputName.getText().toString());
+                        //ClearFile("MainMenu");
+                        //FileWrite("MainMenu", Changer);
+
+                        popupWindow1.dismiss();
+
+                    }
+                });
+
+                btnDismissList.setOnClickListener(new Button.OnClickListener(){
+                    @Override
+                    public void onClick(View v){
+                        popupWindow1.dismiss();
+
+                    }
+                });
+
+
+                popupWindow1.showAtLocation(popupView1, Gravity.CENTER, 0, 0);
+
+            }
+        });
+
+
         if (tmplist != null) {
             for (DyGroceriesList3 object : tmplist) {
                 final CheckBox checkBoxNew = new CheckBox(getApplicationContext());

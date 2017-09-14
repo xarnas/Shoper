@@ -261,7 +261,24 @@ public void UpdateCatItem(int id, CategoryList newName ){
         return newGR3String;
     }
 
+  public String changeMainMenuTitle(int id, String fullListDM3,String updatedName){
 
+      String newDM3String="";
+
+      String[] tokens = fullListDM3.split(";");
+
+      for (String t : tokens) {
+          String[] tokens2 = t.split(":");
+          if (!tokens2[0].isEmpty() && !tokens2[0].contains("\n")){
+                  if (Integer.parseInt(tokens2[1])!= id) {
+                        newDM3String=newDM3String+tokens2[0]+":"+tokens2[1]+";";
+                 }else{
+                      newDM3String=newDM3String+updatedName+":"+tokens2[1]+";";
+                 }
+         }
+      }
+      return newDM3String;
+  }
     public String removeItem(int id, String fullListDM3,String fullListGR3){
 
         int possition = getAdapterItemPosition(id);
