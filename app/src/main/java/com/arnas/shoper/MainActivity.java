@@ -404,11 +404,11 @@ public class MainActivity extends AppCompatActivity {
                         TextView text2 = new TextView(getApplicationContext());
                         TextView text3 = new TextView(getApplicationContext());
                         row.setId(100 + nIndex);
-                        text1.setText(" keisti ");
+                        text1.setText("  keisti ");
                         row.addView(text1);
-                        text2.setText("ištrinti ");
+                        text2.setText("  ištrinti ");
                         row.addView(text2);
-                        text3.setText("atšaukti");
+                        text3.setText("  atšaukti");
                         row.addView(text3);
 
                         text1.setOnClickListener(new View.OnClickListener() {
@@ -417,7 +417,6 @@ public class MainActivity extends AppCompatActivity {
                                 if (indicator == 0) {
                                     addItemsOnSpinner(checkBox, Table, checkBox.getId());
                                 } else {
-                                    editMode = true;
                                    // ArrayList<DyGroceriesList3> tmplist = (ArrayList<DyGroceriesList3>) save.fullListHead(checkBox.getId());
                                     openHeadId = checkBox.getId();
                                     Intent intent = new Intent(MainActivity.this, editListActivity.class);
@@ -435,26 +434,46 @@ public class MainActivity extends AppCompatActivity {
                         text2.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Toast.makeText(getApplicationContext(),
-                                        "Ištrinta iš sąrašo " + checkBox.getText().toString(), Toast.LENGTH_LONG)
-                                        .show();
-                                int a = checkBox.getId();
-                                if (editMode) {
-                                    save.removeItem(checkBox.getId(), openHeadId);
-                                } else {
-                                    String DM3 = FileRead("MainMenu");
-                                    String GR3 = FileRead("Groceries");
-                                    String modiList = save.removeItem(checkBox.getId(),DM3,GR3);
-                                    String[] modiListsplited = modiList.split("##");
-                                    ClearFile("Groceries");
-                                    FileWrite("Groceries", modiListsplited[1].toString());
-                                    ClearFile("MainMenu");
-                                    FileWrite("MainMenu", modiListsplited[0].toString());
-                                }
-                                Table.removeViewAt(nIndex);
-                                Table.removeView(findViewById(100 + nIndex));
+
+                                LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                                final View popupViewCat = layoutInflater.inflate(R.layout.message, null);
+                                final PopupWindow popupWindowCat = new PopupWindow(popupViewCat, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+                                Button btnAcppect = (Button) popupViewCat.findViewById(R.id.deleteItem);
+                                Button btnDismiss = (Button) popupViewCat.findViewById(R.id.dismiss);
+                                final TextView inputName = (TextView)popupViewCat.findViewById(R.id.deleteItemText);
+                                inputName.setText("Ar norite ištrinti "+checkBox.getText().toString().toUpperCase()+" ?");
+                                btnDismiss.setOnClickListener(new View.OnClickListener(){
+                                    @Override
+                                    public void onClick(View V){
+                                        popupWindowCat.dismiss();
+                                    }
+                                });
+
+                                btnAcppect.setOnClickListener(new View.OnClickListener(){
+                                    @Override
+                                        public void onClick(View V){
+                                            Toast.makeText(getApplicationContext(),
+                                                    "Ištrinta iš sąrašo " + checkBox.getText().toString(), Toast.LENGTH_LONG)
+                                                    .show();
+                                            String DM3 = FileRead("MainMenu");
+                                            String GR3 = FileRead("Groceries");
+                                            String modiList = save.removeItem(checkBox.getId(), DM3, GR3);
+                                            String[] modiListsplited = modiList.split("##");
+                                            ClearFile("Groceries");
+                                            FileWrite("Groceries", modiListsplited[1].toString());
+                                            ClearFile("MainMenu");
+                                            FileWrite("MainMenu", modiListsplited[0].toString());
+
+                                            Table.removeViewAt(nIndex);
+                                            Table.removeView(findViewById(100 + nIndex));
+                                            popupWindowCat.dismiss();
+                                        }
+                                    });
+                             popupWindowCat.showAtLocation(popupViewCat, Gravity.CENTER, 0, 0);
+
                             }
                         });
+
                         text3.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -696,7 +715,11 @@ public void newList(){
             for (String t : tokensGR) {
             String[] tokens2 = t.split(":");
             if (!tokens2[0].isEmpty() && !tokens2[0].contains("\n"))  {
+
                 DyGroceriesList3 DGL3 = new DyGroceriesList3(Integer.parseInt(tokens2[3].toString()),tokens2[0].toString(),tokens2[1].toString(),tokens2[2].toString(),Integer.parseInt(tokens2[4].toString()));
+                if (tokens2.length == 6) {
+                    DGL3.setActiveStatus(Integer.parseInt(tokens2[5]));
+                }
                 save.addList(DGL3);
 
             }
@@ -705,7 +728,40 @@ public void newList(){
 
     }
 //end of Load from file function
+public void CreateCategory(){
 
+    /*String[] myCat = {"Pieno gaminiai ir kiaušiniai",
+            "Mėsa",
+            "Žuvis",
+            "Miltiniai gaminiai ir košės",
+            "Duonos gaminiai ir konditerija",
+            "Daržovės ir vaisiai",
+            "Higienos prekės",
+            "Konservuoti gaminiai",
+            "Kava,Kakava ir Arbata",
+            "Saldumynai",
+            "Šaldytas maistas",
+            "Namų priežiuros prekės",
+            "Kūdikiu ir vaikų prekės",
+            "Alkoholiniai gėrimai"
+    };*/
+      int catId=0;
+      String catRawList = FileRead("Category");
+      String[] myCat = catRawList.split(";");
+      for (String t : myCat) {
+        String[] token = t.split(":");
+        if (!token[0].isEmpty() && !token[0].contains("\n")) {
+            catId=Integer.parseInt(token[0]);
+            CategoryList ct1 = new CategoryList(catId, token[1]);
+            save.addCategory(ct1);
+            save.setCatid(catId);
+        }}
+
+
+
+    //FileWrite("Category",catfulllist);
+
+}
 public String generateShopingList(){
 
     String myShopCart="";
@@ -730,7 +786,11 @@ public String generateShopingList(){
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //ClearFile("Groceries"); //for data wipe
+        //ClearFile("MainMenu"); // for data wipe
+        //ClearFile("Category"); // for data wipe
         setContentView(R.layout.activity_main);
+        CreateCategory();
         LoadFullListFromFile("MainMenu");
     }
     @Override
