@@ -1,6 +1,7 @@
 package com.arnas.shoper;
 
         import android.content.Intent;
+        import android.graphics.Color;
         import android.graphics.Typeface;
         import android.os.Bundle;
         import android.support.v7.app.AppCompatActivity;
@@ -43,6 +44,8 @@ public class editListActivity extends AppCompatActivity {
     int openHeadId;
     int groceriesId;
     String checkBoxValue;
+    String statusName;
+    dbSQL helper;
 
 
     @Override
@@ -53,8 +56,11 @@ public class editListActivity extends AppCompatActivity {
         name = getIntent().getStringExtra("NEW_ITEM").toString();
         groceriesId = getIntent().getIntExtra("GROCERIES_ID",0);
         openHeadId=groceriesId;
+        helper = new dbSQL(this);
+
         ArrayList<DyGroceriesList3> tmplist = save.fullListHead(groceriesId);
         checkBoxList(name,tmplist);
+
     }
 
     @Override
@@ -88,33 +94,63 @@ public class editListActivity extends AppCompatActivity {
 
     }
 
-    protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
-
+        protected void checkBoxList(String name,ArrayList<DyGroceriesList3> tmplist){
         setContentView(R.layout.singleitem);
-
         final TextView titleView = (TextView)findViewById(R.id.titleName);
         final TableLayout Table = (TableLayout) findViewById(R.id.tablein);
-
         titleView.setText(name);
         titleView.setTypeface(null, Typeface.BOLD);
+        titleView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                final View popupView1 = layoutInflater.inflate(R.layout.newlisti, null);
+                final PopupWindow popupWindow1 = new PopupWindow(popupView1, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+                Button btnAcppectList = (Button) popupView1.findViewById(R.id.saveItemList);
+                Button btnDismissList = (Button) popupView1.findViewById(R.id.dismissList);
+                final EditText inputName = (EditText)popupView1.findViewById(R.id.itemNameList);
+                inputName.setText(titleView.getText());
+                btnAcppectList.setOnClickListener(new Button.OnClickListener(){
+                    @Override
+                    public void onClick(View v){
+                        titleView.setText(inputName.getText());
+                        titleView.setTypeface(null, Typeface.BOLD);
+                        //String DM3 = FileRead("MainMenu");
+                        //String Changer = save.changeMainMenuTitle(openHeadId,DM3,inputName.getText().toString());
+                        //ClearFile("MainMenu");
+                        //FileWrite("MainMenu", Changer);
+                        helper.updateSingleMainMenu(openHeadId,inputName.getText().toString());
+                        popupWindow1.dismiss();
+                    }
+                });
+                btnDismissList.setOnClickListener(new Button.OnClickListener(){
+                    @Override
+                    public void onClick(View v){
+                        popupWindow1.dismiss();
+                    }
+                });
+                popupWindow1.showAtLocation(popupView1, Gravity.CENTER, 0, 0);
+            }
+        });
         if (tmplist != null) {
             for (DyGroceriesList3 object : tmplist) {
                 final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
                 checkBoxNew.setId(object.getId());
                 checkBoxNew.setText(object.getName()+" "+object.getUnit()+" "+object.getListItem());
                 checkBoxNew.setTypeface(null,Typeface.BOLD_ITALIC);
-                checcBoxFuncionality(Table,checkBoxNew,0);
-
+                checcBoxFuncionality(Table,checkBoxNew,0,object);
             }
         }
     }
 
 
-    protected void checcBoxFuncionality(final TableLayout Table, final CheckBox checkBox, final int indicator) {
+
+        protected void checcBoxFuncionality(final TableLayout Table, final CheckBox checkBox, final int indicator, final DyGroceriesList3 DG3object){
         checkBox.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
+                final int activeStatus = DG3object.getActiveStatus();
                 for (int i = 0; i < 1; i++) {
                     if (!checkBox.isChecked()) {
                         final int nIndex = Table.indexOfChild(checkBox);
@@ -140,18 +176,22 @@ public class editListActivity extends AppCompatActivity {
                         text3.setText("atšaukti");
                         row.addView(text3);
 
+                        final TextView text4 = new TextView(getApplicationContext());
+
+                        if (activeStatus == 1){
+                            statusName="Neaktyvus";
+                            text4.setTextColor(Color.RED);
+                        }else{
+                            text4.setTextColor(Color.GREEN);
+                            statusName="Aktyvus";
+                        }
+                        text4.setText("  "+statusName);
+                        row.addView(text4);
 
                         text1.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                if (indicator == 0) {
                                     addItemsOnSpinner(checkBox, Table, checkBox.getId());
-                                } else {
-                                    editMode = true;
-                                    ArrayList<DyGroceriesList3> tmplist = (ArrayList<DyGroceriesList3>) save.fullListHead(checkBox.getId());
-                                    openHeadId = checkBox.getId();
-                                    checkBoxList(checkBox.getText().toString(), tmplist);
-                                }
 
                             }
                         });
@@ -159,17 +199,37 @@ public class editListActivity extends AppCompatActivity {
                         text2.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Toast.makeText(getApplicationContext(),
-                                        "Ištrinta prekė " + checkBox.getText().toString(), Toast.LENGTH_LONG)
-                                        .show();
-                                int a = checkBox.getId();
-                                if (editMode) {
-                                    save.removeItem(checkBox.getId(), openHeadId);
-                                } else {
-                                    //save.removeItem(checkBox.getId());
+                                LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                                final View popupViewCat = layoutInflater.inflate(R.layout.messsage, null);
+                                final PopupWindow popupWindowCat = new PopupWindow(popupViewCat, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+                                    Button btnAcppect = (Button) popupViewCat.findViewById(R.id.deleteItem);
+                                    Button btnDismiss = (Button) popupViewCat.findViewById(R.id.dismiss);
+                                    final TextView inputName = (TextView)popupViewCat.findViewById(R.id.deleteItemText);
+                                    inputName.setText("Ar norite ištrinti "+checkBox.getText().toString().toUpperCase()+" ?");
+                                    btnDismiss.setOnClickListener(new View.OnClickListener(){
+                                    @Override
+                                public void onClick(View V){
+                                    popupWindowCat.dismiss();
                                 }
-                                Table.removeViewAt(nIndex);
-                                Table.removeView(findViewById(100 + nIndex));
+                                });
+                                btnAcppect.setOnClickListener(new View.OnClickListener(){
+                                    @Override
+                                    public void onClick(View V){
+                                        Toast.makeText(getApplicationContext(),
+                                                "Ištrinta prekė " + checkBox.getText().toString(), Toast.LENGTH_LONG)
+                                                .show();
+                                        //String GR3 = FileRead("Groceries");
+                                        //String modiList = save.removeItem(checkBox.getId(),openHeadId,GR3);
+                                        //ClearFile("Groceries");
+                                        //FileWrite("Groceries", modiList);
+                                        helper.deleteSingleGroceries(checkBox.getId(),openHeadId);
+                                        Table.removeViewAt(nIndex);
+                                        Table.removeView(findViewById(100 + nIndex));
+                                        popupWindowCat.dismiss();
+                                    }
+                                });
+                                popupWindowCat.showAtLocation(popupViewCat, Gravity.CENTER, 0, 0);
+
                             }
                         });
                         text3.setOnClickListener(new View.OnClickListener() {
@@ -182,14 +242,35 @@ public class editListActivity extends AppCompatActivity {
                                 Table.removeView(findViewById(100 + nIndex));
                             }
                         });
+                        text4.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                DyGroceriesList3 tmpGros =  save.singleItem(checkBox.getId(),openHeadId);
+                                if (activeStatus == 0){
+                                    text4.setTextColor(Color.RED);
+                                    text4.setText(" Neaktyvus");
+                                    tmpGros.setActiveStatus(1);
+                                    //String GR3 = FileRead("Groceries");
+                                    //String activeChanger = save.changeActiveStatus(checkBox.getId(),openHeadId,GR3,1);
+                                    //ClearFile("Groceries");
+                                    //FileWrite("Groceries", activeChanger);
+                                    helper.updateSingleGroceriesActiveId(checkBox.getId(),openHeadId,1);
+                                }else{
+                                    text4.setTextColor(Color.GREEN);
+                                    text4.setText(" Aktyvus");
+                                    tmpGros.setActiveStatus(0);
+                                   // String GR3 = FileRead("Groceries");
+                                    //String activeChanger = save.changeActiveStatus(checkBox.getId(),openHeadId,GR3,0);
+                                    //ClearFile("Groceries");
+                                    //FileWrite("Groceries", activeChanger);
+                                    helper.updateSingleGroceriesActiveId(checkBox.getId(),openHeadId,0);
+                                }
+                            }
+                        });
+
 
                         Table.addView(row, nIndex + 1);
                     }
-                           /* Toast.makeText(getApplicationContext(),
-                                    "Position :" + checkBox.getId() + "  ListItem : " + checkBox.getText(), Toast.LENGTH_LONG)
-                                    .show();*/
-
-                    int moveckbox = checkBox.getId() + 1;
 
 
                 }
@@ -236,10 +317,15 @@ public class editListActivity extends AppCompatActivity {
         Button btnDismiss = (Button) popupView.findViewById(R.id.dismiss);
         final EditText inputName = (EditText) popupView.findViewById(R.id.itemName);
         final EditText inputUnit = (EditText) popupView.findViewById(R.id.itemUnit);
+       // final EditText inputPrice = (EditText) popupView.findViewById(R.id.itemPrice);
+        final TextView openDetal = (TextView) popupView.findViewById(R.id.openDetails);
 
-        spinner1.setSelection(2);
+        spinner1.setSelection(0);
 
         // if (!checkBox.getText().toString().isEmpty()) {
+
+        final float[] priceField = {0};
+
         if (checkBox != null) {
             DyGroceriesList3 dgl3 = save.singleItem(checkBox.getId(), openHeadId);
             inputName.setText(dgl3.getName().toString());
@@ -249,6 +335,45 @@ public class editListActivity extends AppCompatActivity {
 
         }
 
+        openDetal.setOnClickListener(new TextView.OnClickListener() {
+                                         @Override
+                                         public void onClick(View v) {
+
+                                             LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                                             final View popupView = layoutInflater.inflate(R.layout.registryoption, null);
+                                             final PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+
+
+                                             final Spinner spinner1 = (Spinner) popupWindow.getContentView().findViewById(R.id.pricer);
+                                             Button btnDismiss = (Button) popupView.findViewById(R.id.dismiss);
+                                             final EditText inputPrice = (EditText) popupView.findViewById(R.id.itemPrice);
+                                             //Pricer integration
+                                             //TODO Picture implentation
+                                             if (checkBox != null) {
+                                                 Pricer prc = save.singleItemPrice(checkBox.getId(), openHeadId);
+                                                 if (prc == null) {
+                                                     inputPrice.setText("0");
+                                                 } else {
+                                                     inputPrice.setText(String.valueOf(prc.getPrice()));
+                                                 }
+                                             }else{
+                                                 inputPrice.setText("0");
+                                             }
+                                             btnDismiss.setOnClickListener(new Button.OnClickListener() {
+
+                                                 @Override
+                                                 public void onClick(View v) {
+                                                     priceField[0] =Float.parseFloat(inputPrice.getText().toString());
+
+                                                     popupWindow.dismiss();
+                                                 }
+                                             });
+                                             //inputPrice.setText("0");
+                                             popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+
+                                         }
+                                     });
         btnAcppect.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -259,64 +384,33 @@ public class editListActivity extends AppCompatActivity {
                             .show();
                     return;
                 }
+                DyGroceriesList3 dg3=null;
                 checkBoxValue = inputName.getText().toString() + " " + inputUnit.getText().toString() + " " + spinner1.getSelectedItem().toString();
 
                 if (checkBox == null) {
                     final CheckBox checkBoxNew = new CheckBox(getApplicationContext());
 
-                    if (editMode == true) {
+
                         int groceriesCount = save.GroceriesLastId(openHeadId) + 1;
                         checkBoxNew.setId(groceriesCount);
-                        DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(), inputName.getText().toString(), inputUnit.getText().toString(), spinner1.getSelectedItem().toString(), openHeadId);
-                        FileWrite("Groceries", inputName.getText().toString() + ":" + inputUnit.getText().toString() + ":" + spinner1.getSelectedItem().toString() + ":" + String.valueOf(groceriesCount) + ":" + String.valueOf(openHeadId) + ";");
+                         dg3 = new DyGroceriesList3(checkBoxNew.getId(), inputName.getText().toString(), inputUnit.getText().toString(), spinner1.getSelectedItem().toString(), MainHeadId,0);
+                        Pricer prc= new Pricer(openHeadId,groceriesCount, priceField[0],"","");
+                        //FileWrite("Groceries", inputName.getText().toString() + ":" + inputUnit.getText().toString() + ":" + spinner1.getSelectedItem().toString() + ":" + String.valueOf(groceriesCount) + ":" + String.valueOf(MainHeadId) + ";");
+                        //FileWrite("Pricer", String.valueOf(MainHeadId)+":"+String.valueOf(groceriesCount)+":"+ String.valueOf(priceField[0])+";");
                         save.addList(dg3);
-                    } else {
-                        int groceriesCount = save.GroceriesLastId(MainHeadId) + 1;
-                        checkBoxNew.setId(groceriesCount);
-                        DyGroceriesList3 dg3 = new DyGroceriesList3(checkBoxNew.getId(), inputName.getText().toString(), inputUnit.getText().toString(), spinner1.getSelectedItem().toString(), MainHeadId);
-                        FileWrite("Groceries", inputName.getText().toString() + ":" + inputUnit.getText().toString() + ":" + spinner1.getSelectedItem().toString() + ":" + String.valueOf(groceriesCount) + ":" + String.valueOf(MainHeadId) + ";");
-                        save.addList(dg3);
-                    }
+                        save.addPriceToItem(prc);
+                        helper.insertDataGroceries(inputName.getText().toString(),openHeadId,inputUnit.getText().toString(),spinner1.getSelectedItem().toString(),priceField[0],"","");
 
 
                     checkBoxNew.setText(checkBoxValue);
-                    checcBoxFuncionality(Table, checkBoxNew, 0);
+                    checcBoxFuncionality(Table, checkBoxNew, 0,dg3);
                 } else {
-                    DyGroceriesList3 dg3 = save.singleItem(checkBox.getId(), openHeadId);
+                     dg3 = save.singleItem(checkBox.getId(), openHeadId);
                     dg3.setName(inputName.getText().toString());
                     dg3.setUnit(inputUnit.getText().toString());
                     dg3.setListItem(spinner1.getSelectedItem().toString());
                     checkBox.setText(checkBoxValue);
-                    String[] tokens = FileRead("Groceries").split(";");
-                    String tmpfilestr = "";
-                    String tmpfilestr2 = "";
-                    boolean reWrite = false;
-                    for (String t : tokens) {
-                        String[] tokens2 = t.split(":");
-                        if (!tokens2[0].contains("\n") && !tokens2.toString().isEmpty()) {
-                            if (tokens2[3].equals(String.valueOf(checkBox.getId())) && tokens2[4].equals(String.valueOf(openHeadId))) {
-                                if (!tokens2[0].equals(inputName.getText().toString())
-                                        || !tokens2[1].equals(inputName.getText().toString())
-                                        || !tokens[2].equals(inputName.getText().toString())) {
-                                    tmpfilestr2 = inputName.getText().toString() + ":" + inputUnit.getText().toString() + ":" + spinner1.getSelectedItem().toString() + ":" + String.valueOf(dg3.getId()) + ":" + String.valueOf(dg3.getHeadId()) + ";";
-                                    tmpfilestr += tmpfilestr2;
-                                    reWrite = true;
-                                } else {
-                                    tmpfilestr += t.toString() + ";";
-                                }
-                            } else {
-                                tmpfilestr += t.toString() + ";";
-                            }
-                        }
-
-
-                        if (reWrite == true) {
-                            ClearFile("Groceries");
-                            FileWrite("Groceries", tmpfilestr);
-                        }
-
-
-                    }
+                    helper.updateSingleGroceries(checkBox.getId(),openHeadId,inputName.getText().toString(),inputUnit.getText().toString(),spinner1.getSelectedItem().toString(),priceField[0],"","");
 
                 }
 

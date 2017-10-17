@@ -13,7 +13,20 @@ public class DyGroceriesList3 extends AppCompatActivity implements Parcelable {
     protected String ListItem;
     protected int HeadId;
     protected int id;
+    protected int activeStatus;
 
+
+    public int getActiveStatus() {
+        return activeStatus;
+    }
+
+    public void setActiveStatus(int activeStatus) {
+        this.activeStatus = activeStatus;
+    }
+
+    public static Creator<DyGroceriesList3> getCREATOR() {
+        return CREATOR;
+    }
 
     protected DyGroceriesList3(Parcel in) {
         Name = in.readString();
@@ -21,6 +34,7 @@ public class DyGroceriesList3 extends AppCompatActivity implements Parcelable {
         ListItem = in.readString();
         HeadId = in.readInt();
         id = in.readInt();
+        activeStatus= in.readInt();
     }
 
     public static final Creator<DyGroceriesList3> CREATOR = new Creator<DyGroceriesList3>() {
@@ -52,12 +66,13 @@ public class DyGroceriesList3 extends AppCompatActivity implements Parcelable {
     }
 
 
-    DyGroceriesList3(int id,String Name, String Unit, String ListItem,int headId){
+    DyGroceriesList3(int id,String Name, String Unit, String ListItem,int headId,int activeStat){
         setName(Name);
         setUnit(Unit);
         setListItem(ListItem);
         setId(id);
         setHeadId(headId);
+        setActiveStatus(activeStat);
     }
 
 
@@ -99,6 +114,7 @@ public class DyGroceriesList3 extends AppCompatActivity implements Parcelable {
         dest.writeString(ListItem);
         dest.writeInt(HeadId);
         dest.writeInt(id);
+        dest.writeInt(activeStatus);
     }
 }
 

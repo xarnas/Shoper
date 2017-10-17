@@ -40,6 +40,10 @@ public class SaveList implements Parcelable {
     List<CategoryList> cList = new ArrayList<CategoryList>();
     List<ShopProgress> shopProgressesList = new ArrayList<ShopProgress>();
     List<ExpandleListChanger> elc = new ArrayList<ExpandleListChanger>();
+    List<Pricer> pricerList = new ArrayList<Pricer>();
+    List<PricerLiveFeed> priceLive = new ArrayList<PricerLiveFeed>();
+
+
     public int lastID;
 
     protected SaveList(Parcel in) {
@@ -51,6 +55,8 @@ public class SaveList implements Parcelable {
         cList =  in.readArrayList(CategoryList.class.getClassLoader());
         shopProgressesList =  in.readArrayList(ShopProgress.class.getClassLoader());
         elc =  in.readArrayList(ExpandleListChanger.class.getClassLoader());
+        pricerList =  in.readArrayList(Pricer.class.getClassLoader());
+        priceLive =  in.readArrayList(Pricer.class.getClassLoader());
 
     }
 
@@ -77,7 +83,7 @@ public class SaveList implements Parcelable {
     public int catid=0;
 
 SaveList() {
-    setLastID(0);
+    /*setLastID(0);
     String[] myCat = {"Pieno gaminiai ir kiaušiniai",
             "Mėsa",
             "Žuvis",
@@ -98,7 +104,7 @@ SaveList() {
         CategoryList ct1 = new CategoryList(catid, myCat[i]);
         addCategory(ct1);
 
-    }
+    }*/
 }
 
 public void DyGroceriesList3Clear(){
@@ -112,6 +118,10 @@ public void addExpandleListChanger(int groupnumber,int groupsize){
     elc.add(elcitem);
 
 }
+public void addPriceToItem(Pricer pricerIn) {
+            pricerList.add(pricerIn);
+}
+
 public void removeExpandleListChanger(int groupnumber,int groupsize){
 
 
@@ -180,6 +190,58 @@ public int changeShopProgress(int groupId,int childid,boolean prog){
     return totalSelected;
 
 }
+    public String removeItem(int id, int openHeadid, String fullListGR3){
+        int possition = getAdapterItemPosition(id);
+        DyGroceriesList3 dg3 = singleItem(possition, openHeadid);
+        String newGR3String="";
+        String[] tokensGR = fullListGR3.split(";");
+        for (String t : tokensGR) {
+            String[] tokens2 = t.split(":");
+            if (!tokens2[0].isEmpty() && !tokens2[0].contains("\n") && Integer.parseInt(tokens2[4])!= openHeadid){
+                newGR3String=newGR3String+tokens2[0]+":"+tokens2[1]+":"+tokens2[2]+":"+tokens2[3]+":"+tokens2[4]+";";
+            }else{
+                if (!tokens2[0].isEmpty() && !tokens2[0].contains("\n") && Integer.parseInt(tokens2[3])!= id){
+                    newGR3String=newGR3String+tokens2[0]+":"+tokens2[1]+":"+tokens2[2]+":"+tokens2[3]+":"+tokens2[4]+";";
+                }
+            }
+        }
+        list.remove(dg3);
+        return newGR3String;
+    }
+    public String changeActiveStatus(int id, int openHeadid, String fullListGR3, int activeStatus){
+        String newGR3String="";
+        String[] tokensGR = fullListGR3.split(";");
+        for (String t : tokensGR) {
+            String[] tokens2 = t.split(":");
+            if (!tokens2[0].isEmpty() && !tokens2[0].contains("\n")) {
+                if (Integer.parseInt(tokens2[4]) == openHeadid && Integer.parseInt(tokens2[3]) == id) {
+                    newGR3String = newGR3String + tokens2[0] + ":" + tokens2[1] + ":" + tokens2[2] + ":" + tokens2[3] + ":" + tokens2[4] + ":" + activeStatus + ";";
+                } else {
+                    if (tokens2.length == 6) {
+                        newGR3String = newGR3String + tokens2[0] + ":" + tokens2[1] + ":" + tokens2[2] + ":" + tokens2[3] + ":" + tokens2[4] +":"+tokens2[5]+";";
+                    }else{
+                        newGR3String = newGR3String + tokens2[0] + ":" + tokens2[1] + ":" + tokens2[2] + ":" + tokens2[3] + ":" + tokens2[4] + ";";
+                    }
+                }
+            }
+        }
+        return newGR3String;
+    }
+    public String changeMainMenuTitle(int id, String fullListDM3,String updatedName){
+        String newDM3String="";
+        String[] tokens = fullListDM3.split(";");
+        for (String t : tokens) {
+            String[] tokens2 = t.split(":");
+            if (!tokens2[0].isEmpty() && !tokens2[0].contains("\n")){
+                if (Integer.parseInt(tokens2[1])!= id) {
+                    newDM3String=newDM3String+tokens2[0]+":"+tokens2[1]+";";
+                }else{
+                    newDM3String=newDM3String+updatedName+":"+tokens2[1]+";";
+                }
+            }
+        }
+        return newDM3String;
+    }
 
 public List<ShopProgress> fullListShopProgList(){
     return shopProgressesList;
@@ -224,6 +286,10 @@ public void UpdateCatItem(int id, CategoryList newName ){
 
     }
 
+   public void pricerLiveFeedin(PricerLiveFeed plf){
+       priceLive.add(plf);
+   }
+
 
     public List returnList()
     {
@@ -231,12 +297,13 @@ public void UpdateCatItem(int id, CategoryList newName ){
     }
 
 
-    public void removeItem(int id,int openHeadid){
+    public void removeItem(int id,int openHeadid,dbSQL db){
 
         int possition = getAdapterItemPosition(id);
         DyGroceriesList3 dg3 = singleItem(possition, openHeadid);
-
         list.remove(dg3);
+        db.deleteSingleGroceries(id,openHeadid);
+
     }
 
 
@@ -285,6 +352,16 @@ public void UpdateCatItem(int id, CategoryList newName ){
 
         for (DyGroceriesList3 item : list) {
             if (item.getId() == id && item.HeadId == openHeadId) {
+                return item;
+            }
+        }
+        return null;
+
+    }
+    public Pricer singleItemPrice(int id,int openHeadId){
+
+        for (Pricer item : pricerList) {
+            if (item.getItemId() == id && item.getOpenHeadId() == openHeadId) {
                 return item;
             }
         }
@@ -366,6 +443,9 @@ public void UpdateCatItem(int id, CategoryList newName ){
         dest.writeList(cList);
         dest.writeList(shopProgressesList);
         dest.writeList(elc);
+        dest.writeList(pricerList);
+        dest.writeList(priceLive);
+
 
     }
 }
