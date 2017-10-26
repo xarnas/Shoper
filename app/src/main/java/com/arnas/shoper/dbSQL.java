@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class dbSQL extends SQLiteOpenHelper {
@@ -346,6 +347,31 @@ public class dbSQL extends SQLiteOpenHelper {
         db.update("MainMenu", data, "_id="+id, null);
     }
 
+    public List<String> prepPriceList(){
+
+        String selectQuery = "SELECT * FROM Pricer;";
+        SQLiteDatabase db  = this.getReadableDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery(selectQuery, null);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        List<String> list = new ArrayList<String>();
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do{
+                    list.add(cursor.getString(3)+" "+cursor.getString(6));
+                }
+                while (cursor.moveToNext());
+            }
+
+            cursor.close();
+        }
+        return list;
+    }
+
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
@@ -373,6 +399,87 @@ public class dbSQL extends SQLiteOpenHelper {
             cursor.close();
         }
         return openIdvalue;
+    }
+
+    public List<String> getPricerListProduct (CharSequence name) {
+
+
+        String selectQuery = "SELECT  * FROM Pricer WHERE Product LIKE "+"'%"+name+"%'" ;
+        SQLiteDatabase db  = this.getReadableDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery(selectQuery, null);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        List<String> list = new ArrayList<String>();
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do{
+                    list.add(cursor.getString(3)+" "+cursor.getString(6));
+                }
+                while (cursor.moveToNext());
+            }
+
+            cursor.close();
+        }
+        return list;
+    }
+
+    public List<String> getPricerListShop (CharSequence name) {
+
+
+        String selectQuery = "SELECT  * FROM Pricer WHERE ShopName LIKE "+"'%"+name+"%'" ;
+        SQLiteDatabase db  = this.getReadableDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery(selectQuery, null);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        List<String> list = new ArrayList<String>();
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do{
+                    list.add(cursor.getString(3)+" "+cursor.getString(6));
+                }
+                while (cursor.moveToNext());
+            }
+
+            cursor.close();
+        }
+        return list;
+    }
+
+
+    public Pricer getPricerListShopFull (int itemid, int openId, String product,String shop) {
+
+        String selectQuery = "SELECT  * FROM Pricer WHERE ShopName LIKE "+"'%"+shop+"%'"+" AND Product LIKE "+"'%"+product+"%'";
+        SQLiteDatabase db  = this.getReadableDatabase();
+        Cursor cursor = null;
+        float priceValue=0;
+        Pricer pc = null;
+        try {
+            cursor = db.rawQuery(selectQuery, null);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do{
+                    cursor.getString(1);//Foto
+                    cursor.getString(0);//pricelink aka id
+                    cursor.getString(4);//price
+                    priceValue=Float.parseFloat(cursor.getString(4).substring(1));
+                    pc = new Pricer(openId,itemid,priceValue,cursor.getString(0),cursor.getString(1));
+                }
+                while (cursor.moveToNext());
+            }
+
+            cursor.close();
+        }
+        return pc;
     }
 
 

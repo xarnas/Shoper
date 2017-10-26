@@ -22,6 +22,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -283,8 +285,9 @@ public class newListActivity extends AppCompatActivity {
 
 
                 final Spinner spinner1 = (Spinner) popupWindow.getContentView().findViewById(R.id.pricer);
-                Button btnAcppect = (Button) popupView.findViewById(R.id.saveitem);
-                Button btnDismiss = (Button) popupView.findViewById(R.id.dismiss);
+                //Button btnDismiss = (Button) popupView.findViewById(R.id.dismiss);
+                TextView btnDismiss = (TextView) popupView.findViewById(R.id.dismiss);
+
                 final EditText inputPrice = (EditText) popupView.findViewById(R.id.itemPrice);
                 btnDismiss.setOnClickListener(new Button.OnClickListener() {
 

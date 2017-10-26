@@ -5,6 +5,8 @@ package com.arnas.shoper;
         import android.graphics.Typeface;
         import android.os.Bundle;
         import android.support.v7.app.AppCompatActivity;
+        import android.text.Editable;
+        import android.text.TextWatcher;
         import android.view.Gravity;
         import android.view.LayoutInflater;
         import android.view.Menu;
@@ -12,16 +14,20 @@ package com.arnas.shoper;
         import android.view.MotionEvent;
         import android.view.View;
         import android.view.ViewGroup;
+        import android.widget.AdapterView;
         import android.widget.ArrayAdapter;
         import android.widget.Button;
         import android.widget.CheckBox;
         import android.widget.EditText;
+        import android.widget.ImageView;
         import android.widget.PopupWindow;
         import android.widget.Spinner;
         import android.widget.TableLayout;
         import android.widget.TableRow;
         import android.widget.TextView;
         import android.widget.Toast;
+
+        import com.squareup.picasso.Picasso;
 
         import java.io.BufferedReader;
         import java.io.FileInputStream;
@@ -31,6 +37,9 @@ package com.arnas.shoper;
         import java.io.InputStreamReader;
         import java.util.ArrayList;
         import java.util.List;
+
+
+
 
 /**
  * Created by arnaspetrauskas on 08/09/2017.
@@ -344,9 +353,109 @@ public class editListActivity extends AppCompatActivity {
                                              final PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
 
 
-                                             final Spinner spinner1 = (Spinner) popupWindow.getContentView().findViewById(R.id.pricer);
-                                             Button btnDismiss = (Button) popupView.findViewById(R.id.dismiss);
+                                             final Spinner spinner2 = (Spinner) popupWindow.getContentView().findViewById(R.id.pricer);
+
+                                             List<String> list2 = new ArrayList<String>();
+                                             list2=helper.prepPriceList();
+
+                                             ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(editListActivity.this, android.R.layout.simple_spinner_item, list2);
+
+                                             dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                                             spinner2.setAdapter(dataAdapter);
+
+
+                                             // ImageView imageView = (ImageView) popupView.findViewById(R.id.PrdImg);
+
+                                             //Button btnDismiss = (Button) popupView.findViewById(R.id.dismiss);
+                                             /*Picasso.with(getBaseContext())
+                                                     .load("https://pricer.lt/images/shops_products/4770074171093.jpg")
+                                                     .resize(109,57).into(imageView);*/
+
+
+                                             TextView btnDismiss = (TextView) popupView.findViewById(R.id.dismiss);
+                                             EditText filter = (EditText) popupView.findViewById(R.id.textFilter);
                                              final EditText inputPrice = (EditText) popupView.findViewById(R.id.itemPrice);
+
+
+
+                                             spinner2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                                 @Override
+                                                 public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
+                                                     ImageView imageView = (ImageView) popupView.findViewById(R.id.PrdImg);
+                                                     String selectedItem = parentView.getItemAtPosition(position).toString().trim(); //this is your selected item
+                                                     int lastSpace = selectedItem.lastIndexOf(" ");
+                                                     String product = selectedItem.substring(0,lastSpace);
+                                                     String shop = selectedItem.substring(lastSpace,selectedItem.length());
+                                                     Pricer prc = helper.getPricerListShopFull(openHeadId,checkBox.getId(),product.trim(),shop.toString().trim());
+
+                                                     Picasso.with(getBaseContext())
+                                                             .load(prc.getItemPicture())
+                                                             .resize(245,100).into(imageView);
+
+
+                                                     inputPrice.setText(String.valueOf(prc.getPrice()));
+
+                                                     Toast.makeText(getApplicationContext(),
+                                                             product, Toast.LENGTH_LONG)
+                                                             .show();
+
+
+
+
+                                                 }
+
+                                                 @Override
+                                                 public void onNothingSelected(AdapterView<?> parent) {
+                                                     Toast.makeText(getApplicationContext(),
+                                                             "Nothing to see", Toast.LENGTH_LONG)
+                                                             .show();
+                                                 }
+                                             });
+
+
+                                             filter.addTextChangedListener(new TextWatcher() {
+                                                 @Override
+                                                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                                                 }
+
+                                                 @Override
+                                                 public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                                     List<String> list2 = new ArrayList<String>();
+                                                     if (count > 0) {
+                                                         if (s.toString().equals("barbora")
+                                                                 ||s.toString().equals("aibe")
+                                                                 ||s.toString().equals("iki")
+                                                                 ||s.toString().equals("lidl")
+                                                                 ||s.toString().equals("maxima")
+                                                                 ||s.toString().equals("norfa")
+                                                                 ||s.toString().equals("rimi")){
+                                                             list2=helper.getPricerListShop(s);
+                                                         }else{
+                                                             list2=helper.getPricerListProduct(s);
+                                                         }
+
+                                                     }else{
+                                                         list2=helper.prepPriceList();
+                                                     }
+                                                     ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(editListActivity.this, android.R.layout.simple_spinner_item, list2);
+
+                                                     dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                                                     spinner2.setAdapter(dataAdapter);
+
+                                                     Toast.makeText(getApplicationContext(),
+                                                             s+" "+count, Toast.LENGTH_LONG)
+                                                             .show();
+                                                 }
+
+                                                 @Override
+                                                 public void afterTextChanged(Editable s) {
+
+                                                 }
+                                             });
                                              //Pricer integration
                                              //TODO Picture implentation
                                              if (checkBox != null) {

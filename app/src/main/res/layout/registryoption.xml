@@ -14,9 +14,9 @@ android:weightSum="1">
     android:layout_height="wrap_content"
     android:text="Kaina" />
 
-<EditText
+    <EditText
     android:id="@+id/itemPrice"
-    android:layout_width="match_parent"
+    android:layout_width="143dp"
     android:layout_height="50dp"
     android:digits="0123456789."
     android:inputType="numberDecimal"
@@ -26,6 +26,14 @@ android:weightSum="1">
     android:layout_height="wrap_content"
     android:text="Nuoroda iš Pricer.lt"
     android:layout_weight="0.29" />
+
+    <EditText
+        android:id="@+id/textFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textNoSuggestions"
+        android:text="" />
 <Spinner
     android:id="@+id/pricer"
     android:layout_width="match_parent"
@@ -40,11 +48,11 @@ android:weightSum="1">
         android:text="Nuotrauka" />
 
     <ImageView
+        android:id="@+id/PrdImg"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:id="@+id/imageView"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"/>
+        android:layout_height="70dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" />
 
 <LinearLayout
     android:layout_width="214dp"
@@ -55,14 +63,12 @@ android:weightSum="1">
     android:weightSum="1">
 
 
-
-    <Button
-        android:id="@+id/dismiss"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.10"
-        android:text="grįžti" />
-
 </LinearLayout>
+
+    <TextView
+        android:id="@+id/dismiss"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="-->grįžti" />
 </LinearLayout>
 
